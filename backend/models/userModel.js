@@ -4,13 +4,13 @@ const userSchema = mongoose.Schema(
     {
         first_name: {
             type: String,
-            default: "firstname"
-            // required: [true, "First name is required !"]
+        
+            required: [true, "First name is required !"]
         },
         last_name: {
             type: String,
-            default: "lastname"
-            // required: [true, "Last name is required !"]
+      
+            required: [true, "Last name is required !"]
         },
         email: {
             type: String,
