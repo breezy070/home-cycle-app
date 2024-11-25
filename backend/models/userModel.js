@@ -4,10 +4,12 @@ const userSchema = mongoose.Schema(
     {
         first_name: {
             type: String,
+            default: "firstname"
             // required: [true, "First name is required !"]
         },
         last_name: {
             type: String,
+            default: "lastname"
             // required: [true, "Last name is required !"]
         },
         email: {
@@ -21,6 +23,7 @@ const userSchema = mongoose.Schema(
         },
         role: {
             type: String,
+            default: "user"
             // required: [true, "Role is required !"]
         },
         profilePicture: {
