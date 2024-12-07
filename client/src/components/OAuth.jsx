@@ -12,6 +12,7 @@ export default function OAuth() {
             const provider = new GoogleAuthProvider();
             const auth = getAuth(app);
             const result = await signInWithPopup(auth, provider);
+            console.log(result);
             //information provided by the result console.log(result)
             const res = await fetch('/api/auth/google', {
                 method: 'POST',
@@ -21,7 +22,7 @@ export default function OAuth() {
                 body: JSON.stringify({
                     name: result.user.displayName,
                     email: result.user.email,
-                    photo: result.user.photoURL,
+                    profilePicture: result.user.photoURL,
                 }),
             });
             const data = await res.json();

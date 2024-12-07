@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import ProfileDropdown from "./profileDropDown";
+
 
 export default function Header() {
     const {currentUser} = useSelector((state) => state.user);
   return (
-    <div className='bg-green-200'>
-        <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
+    <div className='bg-transparent'>
+        <div className='flex justify-between p-10'>
             <Link to='/'>
                 <h1 className='font-bold'>HomeCycleHome</h1>
             </Link>
@@ -16,14 +18,15 @@ export default function Header() {
                 <Link to='/about'>
                     <li>About</li>
                 </Link>
-                <Link to='/profile'>
                     {currentUser ? (
-                        <img src={currentUser.profilePicture} alt="profile" className="h-7 w-7 rounded-full object-cover"/>
+                        <ProfileDropdown profilePicture={currentUser.profilePicture}/>
                     ) : (
-                        <li>Sign in</li>
+                        <Link to='/sign-in'>
+                            <li>Sign in</li>
+                        </Link>
+                        
                     )}
                     
-                </Link>
             </ul>
         </div>
     </div>
