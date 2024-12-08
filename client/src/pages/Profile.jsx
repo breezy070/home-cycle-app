@@ -60,7 +60,9 @@ export default function Profile() {
     } catch (error) {
       dispatch(updateUserFailure(error))
     }
+   
   };
+  console.log(currentUser.address)
   // console.log(formData);
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -71,6 +73,7 @@ export default function Profile() {
         <input defaultValue={currentUser.first_name} type="text" id="first_name" placeholder="First Name" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
         <input defaultValue={currentUser.last_name} type="text" id="last_name" placeholder="Last Name" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
         <input defaultValue={currentUser.email} type="text" id="email" placeholder="E-email" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
+        <input defaultValue={currentUser.address.addressString} disabled type="text" id="address" placeholder="Address" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
         <input type="password" id="password" placeholder="Password" className="bg-green-100 rounded-lg p-3"onChange={handleChange} />
 
         <button className="bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80" >{loading ?'Loading' : 'Update'}</button>

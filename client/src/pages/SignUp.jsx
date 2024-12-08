@@ -10,6 +10,7 @@ export default function SignUp() {
 
   const handleChange = (e) => {
     setFormData({...formData, [e.target.id]: e.target.value})
+    // console.log(formData);
   }
 
   const handleSubmit = async (e) => {
@@ -23,6 +24,7 @@ export default function SignUp() {
         },
         body: JSON.stringify(formData),
       });
+      // console.log(formData);
       const data = await res.json();
       setLoading(false);
       if (data.success === false) {
@@ -31,10 +33,11 @@ export default function SignUp() {
       }
       navigate('/sign-in');
       setError(false);
-      console.log(data);
+      // console.log(data);
     } catch (error) {
       setLoading(false);
       setError(true);
+      // console.error('Network error:', error.message);
     }
   }
 
@@ -45,6 +48,7 @@ export default function SignUp() {
         <input type="text" placeholder='First Name' id='first_name' className='bg-slate-100 p-3 rounded-lg' onChange={handleChange}/>
         <input type="text" placeholder='Last Name' id='last_name' className='bg-slate-100 p-3 rounded-lg' onChange={handleChange}/>
         <input type="text" placeholder='E-mail' id='email' className='bg-slate-100 p-3 rounded-lg' onChange={handleChange}/>
+        <input type="text" placeholder='Address' id='address' className='bg-slate-100 p-3 rounded-lg' onChange={handleChange}/>
         <input type="password" placeholder='Password' id='password' className='bg-slate-100 p-3 rounded-lg' onChange={handleChange}/>
         <button disabled={loading} type='submit' className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-60'>{loading ? 'Loading...' : 'Sign Up'}</button>
         <OAuth/>

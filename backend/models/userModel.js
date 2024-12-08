@@ -17,6 +17,11 @@ const userSchema = mongoose.Schema(
             unique: true,
             required: [true, "E-mail is required !"]
         },
+        address: {
+            type: { type: String, enum: ['Point'], required: true, default: 'Point' },
+            coordinates: { type: [Number], required: true }, // [longitude, latitude]
+            addressString: {type: String, required: [true, "Address is required !"]}
+        },
         password: {
             type: String,
             required: [true, "Password is required !"]
@@ -36,6 +41,7 @@ const userSchema = mongoose.Schema(
     }
 
 );
+userSchema.index({ address: '2dsphere' }); // Geospatial index
 //this creates the collection on the mongoDB, the name of the database was created on the .env file by specifying it.
 const User = mongoose.model("User", userSchema);
 

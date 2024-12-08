@@ -5,6 +5,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
 import Interventions from "./pages/Interventions";
+import TechnicianZoneAssignment from "./pages/TechnicianZoneAssignment";
 import Factures from "./pages/Factures";
 import Header from "./components/Header";
 
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/interventions" element={<Interventions />} />
             <Route path="/factures" element={<Factures />} />
+            <Route path="/technician-zone-assignment" element={<TechnicianZoneAssignment />} />
           </Route>
           
         </Routes>

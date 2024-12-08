@@ -1,8 +1,10 @@
+
 import User from '../models/userModel.js'
 import Technician from '../models/technicianModel.js'
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 export const test = (req, res) => {
     res.json({
@@ -11,19 +13,75 @@ export const test = (req, res) => {
 }
 
 //user account signup
-export const signup = async (req, res, next) => {
-    const { first_name, last_name, email, password } = req.body;
-    const hashedPassword = bcryptjs.hashSync(password, 10);
-    const newUser = new User({ first_name, last_name, email, password: hashedPassword });
-    try {
-        await newUser.save();
-        res.status(201).json({message: "User created !"});
-    } catch (error) {
-        next(error);
-        // next(errorHandler(300, "something went wrong")); custom error
-    }
+// export const signup = async (req, res, next) => {
+//     const { first_name, last_name, email, address, password } = req.body;
+//     const hashedPassword = bcryptjs.hashSync(password, 10);
+//     const newUser = new User({ first_name, last_name, email, address, password: hashedPassword });
+//     try {
+//         await newUser.save();
+//         res.status(201).json({message: "User created !"});
+//     } catch (error) {
+//         next(error);
+//         // next(errorHandler(300, "something went wrong")); custom error
+//     }
 
-}
+// }
+
+export const signup = async (req, res, next) => {
+    const { first_name, last_name, email, address, password } = req.body;
+
+    // Hash the password
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+
+    try {
+        // Geocode the address using OpenStreetMap's Nominatim API with Axios
+        const geocodeAddress = async (address) => {
+            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`;
+
+            try {
+                // Make the GET request using Axios
+                const response = await axios.get(url);
+                const results = response.data;
+
+                if (results.length > 0) {
+                    const { lat, lon } = results[0];
+                    return [parseFloat(lon), parseFloat(lat)]; // Return coordinates as [lng, lat]
+                } else {
+                    // throw new Error('Geocoding failed: No results found.');
+                    console.log('Geocoding failed: No results found.')
+                }
+            } catch (error) {
+                // throw new Error(`Geocoding failed: ${error.message}`);
+                console.log(`Geocoding failed: ${error.message}`)
+            }
+        };
+
+        // Perform geocoding to get the longitude and latitude
+        const [longitude, latitude] = await geocodeAddress(address);
+
+        // Create a new user with GeoJSON address format
+        const newUser = new User({
+            first_name,
+            last_name,
+            email,
+            password: hashedPassword,
+            address: {
+                type: 'Point',
+                addressString: address,
+                coordinates: [longitude, latitude], // GeoJSON format
+            },
+        });
+
+        // Save the new user to the database
+        await newUser.save();
+
+        // Respond with a success message
+        res.status(201).json({ message: 'User created!' });
+    } catch (error) {
+        console.error('Error during signup:', error.message);
+        next(error); // Pass the error to the error handler
+    }
+};
 
 //technician account signup
 export const signupTechnician = async (req, res, next) => {
