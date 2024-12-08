@@ -26,9 +26,32 @@ const technicianSchema = mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        // zone: {
+        //     type: { type: String, default: 'Polygon' },
+        //     coordinates: [[[Number]]], // GeoJSON Polygon: [[[lng, lat], ...]]
+        //   },
         zone: {
-            type: { type: String, default: 'Polygon' },
-            coordinates: [[[Number]]], // GeoJSON Polygon: [[[lng, lat], ...]]
+            type: {
+              type: String,
+              default: 'Polygon',
+              enum: ['Polygon'], // Ensure only 'Polygon' is accepted
+            },
+            coordinates: {
+              type: [[[Number]]], // GeoJSON Polygon requires an array of arrays
+            //   validate: {
+            //     validator: function (value) {
+            //       // Optional validation for a valid GeoJSON polygon structure
+            //       return (
+            //         Array.isArray(value) &&
+            //         value.length > 0 &&
+            //         value[0].length >= 4 && // Polygon requires at least 4 points (closing loop)
+            //         value[0][0].length === 2 // Each point must have [lng, lat]
+            //       );
+            //     },
+            //     message: "Invalid GeoJSON Polygon coordinates!",
+            //   },
+            },
+            // required: [true, "Zone is required !"]
           },
         password: {
             type: String,
@@ -49,6 +72,8 @@ const technicianSchema = mongoose.Schema(
     }
 
 );
+
+technicianSchema.index({ zone: "2dsphere" });
 //this creates the collection on the mongoDB, the name of the database was created on the .env file by specifying it.
 const Technician = mongoose.model("Technician", technicianSchema);
 

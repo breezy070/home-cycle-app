@@ -1,4 +1,6 @@
 import User from "../models/userModel.js";
+import Technician from "../models/technicianModel.js";
+import Intervention from "../models/interventionModel.js";
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 
@@ -51,4 +53,53 @@ export const deleteUser = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+}
+
+export const scheduleAppointment = async (req, res, next ) => {
+    try {
+        const { userId, date,  location } = req.body;
+
+        console.log("location: "+location)
+
+
+        if (!userId || !date || !location) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        if (!Array.isArray(location) || location.length !== 2) {
+            return res.status(400).json({ message: 'Invalid location format. Must be [longitude, latitude]' });
+        }
+
+        // Find a technician available in the user's zone
+        const technician = await Technician.findOne({
+            availability: true,
+            zone: {
+            $geoIntersects: {
+                $geometry: {
+                type: 'Point',
+                coordinates: location,
+                },
+            },
+            },
+        });
+
+        if (!technician) {
+            return res.status(404).json({ message: 'No technician available in your zone' });
+        }
+
+        // Create an appointment
+        const intervention = new Intervention({
+            userId,
+            technicianId: technician._id,
+            date,
+     
+        });
+
+        await intervention.save();
+
+        res.status(200).json({ message: 'Appointment scheduled', intervention });
+        } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error', error });
+        }
 }

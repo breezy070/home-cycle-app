@@ -2,25 +2,11 @@ import mongoose from "mongoose";
 
 const interventionSchema = mongoose.Schema(
     {
-        date: {
-        type: Date,
-        required: true,
-        },
-        type: {
-        type: String,
-        required: true,
-        enum: ['maintenance', 'repair'],
-        },
-        description: {
-        type: String,
-        required: true,
-        },
-        status: {
-        type: String,
-        required: true,
-        enum: ['pending', 'in-progress', 'completed', 'cancelled'],
-        default: 'pending',
-        },
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+        technicianId: { type: mongoose.Schema.Types.ObjectId, ref: 'Technician', required: false },
+        date: { type: Date, required: false },
+        status: { type: String, enum: ['Pending', 'Completed', 'Canceled','In progress'], default: 'Pending' },
+        // services: [String], // List of services like 'brake replacement', 'tyre change'
     },
     {
         timestamps: true
