@@ -26,6 +26,10 @@ const technicianSchema = mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        zone: {
+            type: { type: String, default: 'Polygon' },
+            coordinates: [[[Number]]], // GeoJSON Polygon: [[[lng, lat], ...]]
+          },
         password: {
             type: String,
             required: [true, "Password is required !"]

@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoute.js';
+import adminRoutes from './routes/adminRoute.js'
 import authRoutes from './routes/authRoute.js';
 import cookieParser from 'cookie-parser';
 
@@ -25,6 +26,7 @@ app.listen(3000, ()=> {
 })
 
 app.use("/api/user", userRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes)
 
 //error handling with middleware and function
