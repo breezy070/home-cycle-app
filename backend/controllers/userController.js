@@ -57,11 +57,11 @@ export const deleteUser = async (req, res, next) => {
 
 export const scheduleAppointment = async (req, res, next ) => {
     try {
-        const { userId, date,  location } = req.body;
+        const { userId, date, services,  location } = req.body;
 
         const [lng, lat] = location; // Ensure this is an array [lng, lat]
 
-        console.log("location: "+location)
+        console.log("location: ", location)
 
 
         if (!userId || !date || !location) {
@@ -100,6 +100,7 @@ export const scheduleAppointment = async (req, res, next ) => {
             userId,
             technicianId: technician._id,
             date,
+            services
      
         });
 
