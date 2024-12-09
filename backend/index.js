@@ -28,6 +28,7 @@ app.listen(3000, ()=> {
 app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes)
+// app.use("/api/interventions", interventionRoutes)
 
 //error handling with middleware and function
 app.use((err, req, res, next) => {

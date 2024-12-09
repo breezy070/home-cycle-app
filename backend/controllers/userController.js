@@ -136,3 +136,67 @@ export const getAppointments = async (req, res, next ) => {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 }
+
+export const cancelAppointment = async (req, res, next ) => {
+    // if (req.user.id !== req.params.id) {
+    //     return next(errorHandler(401, 'You can only delete your appointments'));
+    // }
+
+    // try {
+    //     await Intervention.findByIdAndUpdate(req.params.id);
+    //     res.status(200).json('Appointent has been cancelled !');
+    // } catch (error) {
+    //     next(error);
+    // }
+
+    // if (req.technician.id !== req.params.id) {
+    //     return next(errorHandler(401, 'You can only update YOUR account !'));
+    // }
+
+    // try {
+    //     if (req.body.password) {
+    //         req.body.password = bcryptjs.hashSync(req.body.password, 10)
+    //     }
+
+    const { appointmentId } = req.params;
+    const { status } = req.body;
+  
+    try {
+      const updatedAppointment = await Intervention.findByIdAndUpdate(
+        appointmentId,
+        { status },
+        { new: true }
+      );
+  
+      if (!updatedAppointment) {
+        return res.status(404).json({ success: false, message: 'Appointment not found' });
+      }
+  
+      res.status(200).json({ success: true, data: updatedAppointment });
+    } catch (error) {
+      console.error('Error updating appointment:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  }
+
+        // const updatedTechnician = await Technician.findByIdAndUpdate(
+        //     req.params.id,
+        //     {
+        //         $set: {
+        //             first_name: req.body.first_name,
+        //             last_name: req.body.last_name,
+        //             email: req.body.email,
+        //             password: req.body.password,
+        //             profilePicture: req.body.profilePicture,
+        //         }
+        //     },
+        //     //show updated
+        //     {new: true}
+        // );
+        // const {password, ...rest } = updatedTechnician._doc;
+        // res.status(200).json(rest);
+//     } catch (error) {
+//         next(error)
+//     }
+// }
+
