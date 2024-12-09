@@ -34,21 +34,31 @@ export const getTechnicianZone = async (req, res, next ) => {
 
 export const assignTechnicianZone = async (req, res, next ) => {
     const { technicianId, coordinates } = req.body; // Extract data from the request
+    console.log("coord: " + coordinates)
+
+    // Ensure the first and last points are the same : mongodB requires that the loop closes (1 position should be the same as the last)
+    const firstPoint = coordinates[0][0];
+    const lastPoint = coordinates[0][coordinates[0].length - 1];
+
+    // If they are not the same, make them the same
+    if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
+    coordinates[0].push(firstPoint);  // Close the polygon
+    }
 
     try {
         // Find the technician by ID and update their zone
         const technician = await Technician.findByIdAndUpdate(
-        technicianId,
-        {
-            $set: {
-            zone: {
-                type: 'Polygon',
-                coordinates: coordinates, // The GeoJSON Polygon coordinates
+            technicianId,  // The technician's id (to identify which technician to update)
+            {
+              $set: {
+                zone: {  // Setting the zone field with valid data
+                  type: 'Polygon',
+                  coordinates: coordinates,
+                }
+              }
             },
-            },
-        },
-        { new: true } // Return the updated technician object
-        );
+            { new: true }  // Option to return the updated document
+          );
 
         if (!technician) {
         return res.status(404).json({ message: 'Technician not found' });

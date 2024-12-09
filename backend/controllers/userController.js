@@ -59,6 +59,8 @@ export const scheduleAppointment = async (req, res, next ) => {
     try {
         const { userId, date,  location } = req.body;
 
+        const [lng, lat] = location; // Ensure this is an array [lng, lat]
+
         console.log("location: "+location)
 
 
@@ -71,17 +73,23 @@ export const scheduleAppointment = async (req, res, next ) => {
         }
 
         // Find a technician available in the user's zone
-        const technician = await Technician.findOne({
-            availability: true,
-            zone: {
-            $geoIntersects: {
-                $geometry: {
-                type: 'Point',
-                coordinates: location,
+        //findOne and update
+        const technician = await Technician.findOneAndUpdate(
+            {
+                availableStatus: true,
+                zone: {
+                    $geoIntersects: {
+                        $geometry: {
+                        type: 'Point',
+                        coordinates: location,
+                        // coordinates: [lng, lat],
+                        },
+                    },
                 },
             },
-            },
-        });
+            { $set: { availableStatus: false } },
+            { new: true } // Return the updated technician
+        );
 
         if (!technician) {
             return res.status(404).json({ message: 'No technician available in your zone' });
