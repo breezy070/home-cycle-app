@@ -1,11 +1,11 @@
 import express from 'express';
 import { getAllTechnicians, getTechnicianZone, assignTechnicianZone } from '../controllers/adminController.js';
-import { verifyToken } from '../utils/verifyUser.js';
+import { verifyToken, verifyRole } from '../utils/verifyUser.js';
 
 const router = express.Router();
 
 router.get('/');
-router.get('/technicians', verifyToken, getAllTechnicians);
+router.get('/technicians', verifyToken, verifyRole('admin'), getAllTechnicians);
 router.get('/technician-zone/:technicianId', verifyToken, getTechnicianZone);
 router.post('/technician-assign-zone', verifyToken, assignTechnicianZone)
 // router.post('/update/technician/:id', verifyToken, updateTechnician);

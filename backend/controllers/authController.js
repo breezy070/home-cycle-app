@@ -1,6 +1,7 @@
 
 import User from '../models/userModel.js'
 import Technician from '../models/technicianModel.js'
+import Admin from '../models/adminModel.js';
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
@@ -98,6 +99,45 @@ export const signupTechnician = async (req, res, next) => {
 
 }
 
+//Admin account signup
+export const signupAdmin = async (req, res, next) => {
+    const { first_name, last_name, email, password } = req.body;
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+    const newAdmin = new Admin({ first_name, last_name, email, password: hashedPassword });
+    try {
+        await newAdmin.save();
+        res.status(201).json({message: "Admin created !"});
+    } catch (error) {
+        next(error);
+        // next(errorHandler(300, "something went wrong")); custom error
+    }
+
+}
+
+//Admin account sign in
+export const signinAdmin = async (req, res, next) => {
+    const {email, password} = req.body;
+    try {
+        const validAdmin = await Admin.findOne({email});
+
+        if (!validAdmin) return next(errorHandler(404, 'Admin not found'));
+
+        const validPassword = bcryptjs.compareSync(password, validAdmin.password);
+
+        if (!validPassword) return next(errorHandler(401, 'Wrong credentials'));
+
+        const token = jwt.sign({id: validAdmin._id, role: validAdmin.role}, process.env.JWT_SECRET);
+
+        //removing the password from the client and sending out the rest only
+        const {password: hashedPassword, ...rest} = validAdmin._doc;
+        const expiryDate = new Date(Date.now() + 3600000); //1 hour
+
+        res.cookie('access_token', token, {httpOnly: true, expires: expiryDate}).status(200).json(rest);
+    } catch (error) {
+        next(error);
+    }
+}
+
 //user account sign in
 export const signin = async (req, res, next) => {
     const {email, password} = req.body;
@@ -110,7 +150,7 @@ export const signin = async (req, res, next) => {
 
         if (!validPassword) return next(errorHandler(401, 'Wrong credentials'));
 
-        const token = jwt.sign({id: validUser._id}, process.env.JWT_SECRET);
+        const token = jwt.sign({id: validUser._id, role: validUser.role}, process.env.JWT_SECRET);
 
         //removing the password from the client and sending out the rest only
         const {password: hashedPassword, ...rest} = validUser._doc;
@@ -128,13 +168,13 @@ export const signinTechnician = async (req, res, next) => {
     try {
         const validTechnician = await Technician.findOne({email});
 
-        if (!validTechnician) return next(errorHandler(404, 'User not found'));
+        if (!validTechnician) return next(errorHandler(404, 'Technician not found'));
 
         const validPassword = bcryptjs.compareSync(password, validTechnician.password);
 
         if (!validPassword) return next(errorHandler(401, 'Wrong credentials'));
 
-        const token = jwt.sign({id: validTechnician._id}, process.env.JWT_SECRET);
+        const token = jwt.sign({id: validTechnician._id, role: validTechnician.role}, process.env.JWT_SECRET);
 
         //removing the password from the client and sending out the rest only
         const {password: hashedPassword, ...rest} = validTechnician._doc;

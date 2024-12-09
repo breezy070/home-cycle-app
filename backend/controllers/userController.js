@@ -112,3 +112,27 @@ export const scheduleAppointment = async (req, res, next ) => {
         res.status(500).json({ message: 'Server Error', error });
         }
 }
+
+export const getAppointments = async (req, res, next ) => {
+    try {
+    const { userId } = req.params;
+    console.log(userId)
+
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    const appointments = await Intervention.find({ userId })
+      .populate('technicianId', 'profilePicture') // Populate technician details
+      .exec();
+
+    if (!appointments || appointments.length === 0) {
+      return res.status(404).json({ message: 'No appointments found' });
+    }
+
+    res.status(200).json({ appointments });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../redux/user/userSlice";
 import { Link, useLocation } from "react-router-dom";
 
@@ -9,6 +9,8 @@ const ProfileDropdown = (props) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const location = useLocation();
+
+    const { currentUser } = useSelector((state) => state.user); // Access user data
 
   const handleSignOut = async () => {
     try {
@@ -55,7 +57,7 @@ const ProfileDropdown = (props) => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-green-200 rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-green-200 rounded-lg shadow-lg z-[1000]">
           <ul className="flex flex-col py-2">
             <Link onClick={handleCloseDropdown} to='/profile' className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
@@ -63,6 +65,17 @@ const ProfileDropdown = (props) => {
                     <div>Profile</div>
                 </div>
             </Link>
+            {currentUser?.role === "admin"
+              ?
+                <Link onClick={handleCloseDropdown} to='/technician-zone-assignment' className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
+                      <div className="fa-solid fa-user w-5 h-5"></div>
+                      <div>Assign Zone</div>
+                  </div>
+                </Link>
+              :
+              ''
+            }
             <Link onClick={handleCloseDropdown} to='/achats' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
             <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
                 <span className="fa-solid fa-cart-shopping w-5 h-5"></span>

@@ -8,9 +8,21 @@ export const verifyToken = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) return next(errorHandler(403, "Invalid Token"));
-
+        console.log('Verified User:', user);
         req.user = user;
         next();
     })
 
 }
+
+export const verifyRole = (...roles) => {
+    return (req, res, next) => {
+        console.log('User:', req.user);
+        console.log('Allowed roles:', roles);
+        if (!req.user || !roles.includes(req.user.role)) {
+            return next(errorHandler(403, "Access denied. Insufficient permissions."));
+        }
+        next();
+    };
+};
+

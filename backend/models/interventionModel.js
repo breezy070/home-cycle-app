@@ -6,7 +6,7 @@ const interventionSchema = mongoose.Schema(
         technicianId: { type: mongoose.Schema.Types.ObjectId, ref: 'Technician', required: false },
         date: { type: Date, required: false },
         status: { type: String, enum: ['Pending', 'Completed', 'Canceled','In progress'], default: 'Pending' },
-        // services: [String], // List of services like 'brake replacement', 'tyre change'
+        services: [String], // List of services like 'brake replacement', 'tyre change'
     },
     {
         timestamps: true

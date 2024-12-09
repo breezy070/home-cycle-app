@@ -1,6 +1,7 @@
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 
 export default function ListBox({ technicians, selectedTechnician, onSelectTechnician }) {
+  console.log(technicians)
   return (
     <div className="flex flex-row items-center justify-center gap-3 w-full mx-auto p-2">
       <div>
@@ -29,7 +30,10 @@ export default function ListBox({ technicians, selectedTechnician, onSelectTechn
                   }`
                 }
               >
-                {technician.first_name}
+                <div className='flex flex-row align-middle items-center gap-3 justify-center rounded-lg w-full'>
+                  <div className='w-1/2'>{technician.first_name}</div>
+                  <img src={technician.profilePicture} alt="" className='h-7 w-7 rounded-full object-cover cursor-pointer'/>
+                </div>
               </ListboxOption>
             ))}
           </ListboxOptions>
