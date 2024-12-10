@@ -2,22 +2,23 @@ import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headless
 
 export default function ListBox({ technicians, selectedTechnician, onSelectTechnician }) {
   console.log(technicians)
+  console.log(selectedTechnician)
   return (
     <div className="flex flex-row items-center justify-center gap-3 w-full mx-auto p-2">
-      <div>
-        <h2>Select a Technician</h2>
-      </div>
       <Listbox
         value={selectedTechnician?._id || ''}
         onChange={(technicianId) => {
           const technician = technicians.find((tech) => tech._id === technicianId);
           onSelectTechnician(technician); // Notify parent of selection
         }}
-        className="z-[10000] w-44 text-center"
+        className="z-[10000] w-52 text-center"
       >
         <div className="relative">
           <ListboxButton className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none text-center">
-            {selectedTechnician ? selectedTechnician.first_name : 'Select a Technician'}
+            <div className='flex flex-row gap-2 justify-center items-center align-middle'>
+              <img src={selectedTechnician ? selectedTechnician.profilePicture : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="" className='h-7 w-7 rounded-full object-cover cursor-pointer'/>
+              <p className=''>{selectedTechnician ? selectedTechnician.first_name : 'Select Technician'}</p>
+            </div>
           </ListboxButton>
           <ListboxOptions className="absolute mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none">
             {technicians.map((technician) => (
