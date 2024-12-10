@@ -25,7 +25,8 @@ export default function SignIn() {
 
     try {
       dispatch(signInStart());
-      const endpoint = `/api/auth/signin/${role}`; // Dynamic endpoint based on role
+      const endpoint = `/api/auth/signin/${role === 'admin' || role ==='technician' ? role : ''}`; // Dynamic endpoint based on role
+      console.log('url endpoint: '+endpoint)
       const res = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -33,6 +34,7 @@ export default function SignIn() {
         },
         body: JSON.stringify(formData),
       });
+      console.log(formData)
       const data = await res.json();
 
       if (data.success === false) {
@@ -48,7 +50,10 @@ export default function SignIn() {
       else navigate("/");
 
       console.log(data);
+      console.l
     } catch (error) {
+      console.log(error)
+      console.log(error.message)
       dispatch(signInFailure(error));
     }
   };
