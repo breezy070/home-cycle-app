@@ -32,6 +32,21 @@ export const getTechnicianZone = async (req, res, next ) => {
       }
 }
 
+export const getAllTechnicianZones = async (req, res) => {
+    try {
+      const zones = await Technician.find().populate('zone'); // Assuming you have a Technician model
+      if (!zones || zones.length === 0) {
+        return res.status(404).json({ message: 'No zones found' });
+      }
+  
+      res.status(200).json({ zones });
+      console.log(zones)
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+  };
+
 export const assignTechnicianZone = async (req, res, next ) => {
     const { technicianId, coordinates } = req.body; // Extract data from the request
     console.log("coord: " + coordinates)
