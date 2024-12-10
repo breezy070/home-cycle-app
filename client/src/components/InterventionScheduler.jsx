@@ -48,7 +48,7 @@ export default function InterventionScheduler() {
   
     
     return (
-      <div className="container mx-auto p-4">
+      <div className="flex flex-col container mx-auto p-4 w-72">
         <h2 className="text-2xl font-bold mb-4">Schedule an Appointment</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -105,7 +105,8 @@ export default function InterventionScheduler() {
             Schedule Appointment
           </button>
         </form>
-        {message && <p className="mt-4 text-red-500">{message}</p>}
+        {/* {message && <p className="mt-4 text-red-500">{message}</p>} */}
+        {message === 'Error scheduling appointment' ? <p className="mt-4 text-red-500">{message}</p> : <p className="mt-4 text-green-500">{message}</p>}
       </div>
     );
 }

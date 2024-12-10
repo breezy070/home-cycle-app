@@ -36,7 +36,7 @@ export default function Interventions() {
           prev.map((appointment) =>
             //important to use the mongo ._id
             appointment._id === appointmentId
-              ? { ...appointment, status: 'cancelled' }
+              ? { ...appointment, status: 'Cancelled' }
               : appointment
           )
         );
@@ -47,7 +47,9 @@ export default function Interventions() {
     }
   };
   
-  
+  useEffect(() => {
+    console.log('Updated Appointments:', appointments);
+  }, [appointments]);
 
   return (
     <div>
@@ -60,23 +62,23 @@ export default function Interventions() {
         <h2 className='text-3xl text-start font-semibold p-10'>Mes Interventions</h2>
         <div className='flex flex-col gap-10 p-10'>
           {appointments.map((appointment) => (
-            <div key={appointment._id} className='flex flex-row gap-10 w-full bg-slate-200 rounded-xl p-5'>
+            <div key={appointment._id} className={`flex flex-row gap-10 w-full ${appointment.status === 'Cancelled' ? `bg-slate-700 opacity-50` : `bg-slate-200`} rounded-xl p-5`}>
               <img 
                 src={appointment.technicianId?.profilePicture || 'default-technician.jpg'} 
                 alt={appointment.technicianId?.first_name || 'Technician'} 
                 className='object-cover max-w-44 max-h-44 rounded-xl'
               />
-              <div className='flex flex-col justify-between w-full'>
+              <div className= 'flex flex-col justify-between w-full'> 
                 <h3 className='text-2xl'>{appointment.technicianId?.first_name || 'Technician Name'}</h3>
                 <p>Date: {new Date(appointment.date).toLocaleString('fr-FR')}</p>
-                <p>Status: {appointment.status}</p>
+                <p className={`${appointment.status === 'Cancelled' ? `text-red-500` : `text-yellow-400`}`}>Status: {appointment.status}</p>
                 <p>Détails: {appointment.services.join(', ')}</p>
               </div>
               <div className="flex w-full justify-end">
                 <div className="flex flex-col justify-end gap-3">
-                  <button className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12'>Modifier</button>
-                  <button className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12'>Consulter Facture</button>
-                  <button onClick={() => handleCancelAppointment(appointment._id)} className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12'>Annuler Rendez-Vous</button>
+                  <button className={`bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12`} disabled={appointment.status === 'Cancelled'}>Modifier</button>
+                  <button className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled'}>Consulter Facture</button>
+                  <button onClick={() => handleCancelAppointment(appointment._id)} className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled'}>{appointment.status === 'Cancelled' ?" Appointment Cancelled" : "Cancel Appointment"}</button>
                   {/* {appointment.status !== 'cancelled' && (
                   <button
                     onClick={() => handleCancelAppointment(appointment.id)}
