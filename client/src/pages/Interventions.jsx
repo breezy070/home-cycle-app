@@ -34,7 +34,8 @@ export default function Interventions() {
         // Update the status in the local state
         setAppointments((prev) =>
           prev.map((appointment) =>
-            appointment.id === appointmentId
+            //important to use the mongo ._id
+            appointment._id === appointmentId
               ? { ...appointment, status: 'cancelled' }
               : appointment
           )
