@@ -123,7 +123,8 @@ export const getAppointments = async (req, res, next ) => {
     }
 
     const appointments = await Intervention.find({ userId })
-      .populate('technicianId', 'profilePicture') // Populate technician details
+      .populate('technicianId', 'first_name last_name profilePicture') // Populate technician details
+      .populate('userId', 'first_name last_name email') // Populate user details
       .exec();
 
     if (!appointments || appointments.length === 0) {
