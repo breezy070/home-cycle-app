@@ -35,6 +35,10 @@ export default function TechnicianZoneAssignment() {
           // Map through the technicians and extract their zone coordinates
           const zones = response.data.technicians.map((technician) => ({
             technicianId: technician._id,
+            first_name: technician.first_name,
+            last_name: technician.last_name,
+            available: technician.availableStatus,
+            profilePicture: technician.profilePicture,
             coordinates: technician.zone.coordinates[0], // Assuming coordinates[0] holds the polygon data
           }));
           console.log("zones", zones);
