@@ -26,6 +26,7 @@ export const getTechnicianZone = async (req, res, next ) => {
     
         // Send the zone as GeoJSON
         res.json({ zone: technician.zone });
+        console.log("techzone: ",technician.zone)
       } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -34,13 +35,13 @@ export const getTechnicianZone = async (req, res, next ) => {
 
 export const getAllTechnicianZones = async (req, res) => {
     try {
-      const zones = await Technician.find().populate('zone'); // Assuming you have a Technician model
-      if (!zones || zones.length === 0) {
-        return res.status(404).json({ message: 'No zones found' });
+      const technicians = await Technician.find(); // Assuming you have a Technician model
+      if (!technicians || technicians.length === 0) {
+        return res.status(404).json({ message: 'No technician zones found' });
       }
   
-      res.status(200).json({ zones });
-      console.log(zones)
+      res.status(200).json({ zones: technicians.zone });
+      console.log(technicians)
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error', error: error.message });

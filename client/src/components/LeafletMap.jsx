@@ -3,7 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 
-export default function LeafletMap({ polygon, onPolygonChange, selectedTechnician }) {
+export default function LeafletMap({ polygon, onPolygonChange, selectedTechnician, allZones }) {
 
   const [zone, setZone] = useState([]); // Array of [lat, lng]
   
@@ -65,6 +65,16 @@ export default function LeafletMap({ polygon, onPolygonChange, selectedTechnicia
         {zone.length > 0 && <Polygon positions={zone} />}
         {/* Render the polygon as GeoJSON */}
         {polygon && <GeoJSON key={JSON.stringify(polygon)} data={polygon} />}
+        // Inside LeafletMap Component:
+        {allZones && allZones.map((zone, index) => (
+          <GeoJSON key={index} data={{
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [zone.coordinates] // Note: Leaflet expects an array of coordinates
+            }
+          }} />
+        ))}
       </MapContainer>
       <div className="flex flex-row mt-4 mb-4 w-full">
         <button onClick={handleSaveZone} className="bg-blue-500 text-white px-4 py-2 rounded mr-2">

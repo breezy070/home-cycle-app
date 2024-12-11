@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { all } from 'axios';
 import LeafletMap from "../components/LeafletMap"
 import ListBox from "../components/ListBox"
 
@@ -7,6 +7,7 @@ export default function TechnicianZoneAssignment() {
   const [technicians, setTechnicians] = useState([]);
   const [selectedTechnician, setSelectedTechnician] = useState(null);
   const [polygon, setPolygon] = useState(null);
+  const [allZones, setAllZones] = useState([]);
 
   // Fetch all technicians
   useEffect(() => {
@@ -24,22 +25,47 @@ export default function TechnicianZoneAssignment() {
 
   // Fetch zone for the selected technician
   useEffect(() => {
-    if (!selectedTechnician) return;
+    console.log("selectedTechnician: " ,selectedTechnician);
+    if (!selectedTechnician) {
 
-    const fetchTechnicianZone = async () => {
-      try {
-        const response = await axios.get(`/api/admin/technician-zone/${selectedTechnician._id}`);
-        if (response.data.zone) {
-          setPolygon(response.data.zone);
-        } else {
-          setPolygon(null);
+      const fetchTechnicianZones = async () => {
+        try {
+          const response = await axios.get(`/api/admin/technicians`);
+          console.log('API Technician Zones response:', response.data.technicians);
+          // Map through the technicians and extract their zone coordinates
+          const zones = response.data.technicians.map((technician) => ({
+            technicianId: technician._id,
+            coordinates: technician.zone.coordinates[0], // Assuming coordinates[0] holds the polygon data
+          }));
+          console.log("zones", zones);
+
+          setAllZones(zones)
+        } catch (error) {
+          console.error('Error fetching technician zone:', error);
         }
-      } catch (error) {
-        console.error('Error fetching technician zone:', error);
-      }
-    };
+      };
+      fetchTechnicianZones();
+    } else {
+      const fetchTechnicianZone = async () => {
+        try {
+          const response = await axios.get(`/api/admin/technician-zone/${selectedTechnician._id}`);
+          console.log('API Technician Zone response:', response.data);
+          if (response.data.zone) {
+            setAllZones([]); // Clear all zones when a technician is selected
+            setPolygon(response.data.zone);
+          } else {
+            setPolygon(null);
+          }
+        } catch (error) {
+          console.error('Error fetching technician zone:', error);
+        }
+      };
+      fetchTechnicianZone();
+    }
 
-    fetchTechnicianZone();
+
+
+
   }, [selectedTechnician]);
 
   return (
@@ -54,6 +80,7 @@ export default function TechnicianZoneAssignment() {
         polygon={polygon}
         onPolygonChange={setPolygon}
         selectedTechnician={selectedTechnician}
+        allZones = {allZones}
       />
     </div>
   );
