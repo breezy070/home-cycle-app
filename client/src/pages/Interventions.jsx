@@ -211,8 +211,8 @@ export default function Interventions() {
                   ?
                     <div className="flex w-full justify-end">
                       <div className="flex flex-col justify-end gap-3">
-                        <button onClick={() => handleAcceptAppointment(appointment._id)} className={`bg-green-700 text-white p-3 rounded-lg uppercase ${appointment.status !== 'Pending' ? '' : 'hover:opacity-95'} w-60 h-12`} disabled={appointment.status === 'Cancelled' || appointment.status === 'Refused' || appointment.status === 'Accepted'}>{appointment.status === 'Cancelled' ?" Appointment Cancelled" : appointment.status === 'Refused' ? "Appointment Refused" : appointment.status === 'Refused' ? "Accept" : 'Accepted'}</button>
-                        
+                        <button onClick={() => handleAcceptAppointment(appointment._id)} className={`bg-green-700 text-white p-3 rounded-lg uppercase ${appointment.status !== 'Pending' ? '' : 'hover:opacity-95'} w-60 h-12`} disabled={appointment.status === 'Cancelled' || appointment.status === 'Refused' || appointment.status === 'Accepted'}>{appointment.status === 'Cancelled' ?" Appointment Cancelled" : appointment.status === 'Refused' ? "Appointment Refused" : appointment.status === 'Pending' ? "Accept" : 'Accepted'}</button>
+
                         <button onClick={() => handleRefuseAppointment(appointment._id)} className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled' || appointment.status === 'Refused'}>{appointment.status === 'Cancelled' ? " Appointment Cancelled" : "Refuse"}</button>
                       </div>
                     </div>
