@@ -39,6 +39,9 @@ export const signup = async (req, res, next) => {
         const geocodeAddress = async (address) => {
             const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`;
 
+            //diff type of search, might be more pricese but user should only enter street name
+            // const url2 = `https://nominatim.openstreetmap.org/search?street=8%20avenue%20des%20vall%C3%A9es&city=Pau&country=France&postalcode=64000&format=json&limit=1`
+
             try {
                 // Make the GET request using Axios
                 const response = await axios.get(url);

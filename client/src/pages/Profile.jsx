@@ -70,12 +70,16 @@ export default function Profile() {
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input type="file" ref={fileRef} hidden accept="image/*"/>
         <img src={currentUser.profilePicture} onClick={() => {fileRef.current.click()}} alt="profile" className='h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2' />
-        <label htmlFor="first_name">{currentUser.role === 'user' ? "User" : currentUser.role === 'technician' ? "Technician": currentUser.role === 'admin' ? "Admin" : "Admin"}</label>
+        <label htmlFor="first_name">{currentUser.role === 'user' ? "User" : currentUser.role === 'technician' ? "Technician": currentUser.role === 'admin' ? "Admin" : "Admin"} Name</label>
         <input defaultValue={currentUser.first_name} type="text" id="first_name" placeholder="First Name" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
+        <label htmlFor="last_name">Last Name</label>
         <input defaultValue={currentUser.last_name} type="text" id="last_name" placeholder="Last Name" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
+        <label htmlFor="email">E-mail</label>
         <input defaultValue={currentUser.email} type="text" id="email" placeholder="E-email" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
+        <label htmlFor="address">Address</label>
         <input defaultValue={currentUser.address ? currentUser.address.addressString : "currentUser.zone (need to fix this for technicians and admins"} disabled type="text" id="address" placeholder="Address" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
-        <input type="password" id="password" placeholder="Password" className="bg-green-100 rounded-lg p-3"onChange={handleChange} />
+        <label htmlFor="address">Password</label>
+        <input disabled={true} type="password" id="password" placeholder="Password" className="bg-green-100 rounded-lg p-3"onChange={handleChange} />
 
         <button className="bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80" >{loading ?'Loading' : 'Update'}</button>
       </form>
