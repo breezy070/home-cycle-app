@@ -70,6 +70,7 @@ export default function Profile() {
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input type="file" ref={fileRef} hidden accept="image/*"/>
         <img src={currentUser.profilePicture} onClick={() => {fileRef.current.click()}} alt="profile" className='h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2' />
+        <label htmlFor="first_name">{currentUser.role === 'user' ? "User" : currentUser.role === 'technician' ? "Technician": currentUser.role === 'admin' ? "Admin" : "Admin"}</label>
         <input defaultValue={currentUser.first_name} type="text" id="first_name" placeholder="First Name" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
         <input defaultValue={currentUser.last_name} type="text" id="last_name" placeholder="Last Name" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
         <input defaultValue={currentUser.email} type="text" id="email" placeholder="E-email" className="bg-green-100 rounded-lg p-3" onChange={handleChange}/>
