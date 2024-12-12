@@ -6,6 +6,7 @@ import technicianRoutes from './routes/technicianRoute.js'
 import adminRoutes from './routes/adminRoute.js'
 import authRoutes from './routes/authRoute.js';
 import cookieParser from 'cookie-parser';
+import logRequestMiddleware from './utils/logRequestMiddleware.js';
 
 dotenv.config();
 
@@ -25,6 +26,8 @@ app.use(cookieParser());
 app.listen(3000, ()=> {
     console.log('Server listening on port 3000');
 })
+
+app.use(logRequestMiddleware);
 
 app.use("/api/user", userRoutes);
 app.use("/api/technician", technicianRoutes);
