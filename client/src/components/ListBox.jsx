@@ -17,6 +17,7 @@ export default function ListBox({ technicians, selectedTechnician, onSelectTechn
           <ListboxButton className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none text-center">
             <div className='flex flex-row gap-2 justify-center items-center align-middle'>
               {/* <img src={selectedTechnician ? selectedTechnician.profilePicture : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="" className='h-7 w-7 rounded-full object-cover cursor-pointer'/> */}
+              {selectedTechnician ? <img className='h-7 w-7 rounded-full object-cover cursor-pointer' src={selectedTechnician.profilePicture} alt="" /> : ''}
               <p className=''>{selectedTechnician ? selectedTechnician.first_name : 'Technician Zones'}</p>
             </div>
           </ListboxButton>
@@ -29,6 +30,7 @@ export default function ListBox({ technicians, selectedTechnician, onSelectTechn
               }
             >
               <div className="flex flex-row align-middle items-center gap-3 justify-center rounded-lg w-full">
+                
                 <div className="w-1/2">Show All Technicians</div>
               </div>
             </ListboxOption>

@@ -123,107 +123,117 @@ export default function Interventions() {
           </Link>
         </div>
         <h2 className='text-3xl text-start font-semibold p-10'>Mes Interventions</h2>
-        <div className='flex flex-col gap-10 p-10'>
-          {appointments.map((appointment) => (
-            <div key={appointment._id} className={`flex flex-row gap-10 w-full ${appointment.status === 'Cancelled' ? `bg-slate-700 opacity-50` : `bg-slate-200`} rounded-xl p-5`}>
-              {/* PROFILE IMAGES */}
-              {currentUser.role === 'technician'
-              ? 
-              <img 
-                src={appointment.userId?.profilePicture || 'default-technician.jpg'} 
-                alt={appointment.userId?.first_name || 'Technician'} 
-                className='object-cover max-w-44 max-h-44 rounded-xl'
-              />
-              :
-              ''
-              }
-
-              {currentUser.role === 'user'
-              ? <img 
-                src={appointment.technicianId?.profilePicture || 'default-user.jpg'} 
-                alt={appointment.technicianId?.first_name || 'User'} 
-                className='object-cover max-w-44 max-h-44 rounded-xl'
-                />
-              :
-              ''
-              }
-
-              {/* APPOINTMENT INFORMATION */}
-
-              {currentUser.role === 'technician'
-              ? 
-              <div className= 'flex flex-col justify-between w-full'> 
-                <h3 className='text-2xl'>{appointment.userId?.first_name || 'Technician Name'}</h3>
-                <p>Date: {new Date(appointment.date).toLocaleString('fr-FR')}</p>
-
-                {appointment.status === 'Cancelled' || appointment.status === 'Refused'
-                ? <p className={`text-red-500`}>Status: {appointment.status}</p>
-                :''
-                }
-                {appointment.status === 'Pending' || appointment.status === 'In Progress'
-                ? <p className={`text-yellow-400`}>Status: {appointment.status}</p>
-                : ''
-                }
-                {appointment.status === 'Accepted'
-                ? <p className={`text-green-400`}>Status: {appointment.status}</p>
-                : ''
-                }
-                <p>Détails: {appointment.services.join(', ')}</p>
-              </div>
-              :
-              ''
-              }
-              
-              {currentUser.role === 'user'
-              ? 
-              <div className= 'flex flex-col justify-between w-full'> 
-                <h3 className='text-2xl'>{appointment.technicianId?.first_name || 'Technician Name'}</h3>
-                <p>Date: {new Date(appointment.date).toLocaleString('fr-FR')}</p>
-                {appointment.status === 'Cancelled' || appointment.status === 'Refused'
-                ? <p className={`text-red-500`}>Status: {appointment.status}</p>
-                :''
-                }
-                {appointment.status === 'Pending' || appointment.status === 'In Progress'
-                ? <p className={`text-yellow-400`}>Status: {appointment.status}</p>
-                : ''
-                }
-                {appointment.status === 'Accepted'
-                ? <p className={`text-green-400`}>Status: {appointment.status}</p>
-                : ''
-                }
-                <p>Détails: {appointment.services.join(', ')}</p>
-              </div>
-              :
-              ''
-              }
-
-              {/* BUTTONS */}
-              {currentUser.role === 'technician'
-              ?
-                <div className="flex w-full justify-end">
-                  <div className="flex flex-col justify-end gap-3">
-                    <button onClick={() => handleAcceptAppointment(appointment._id)} className={`bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12`} disabled={appointment.status === 'Cancelled'}>Accept</button>
-                    <button onClick={() => handleRefuseAppointment(appointment._id)} className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled'}>{appointment.status === 'Cancelled' ?" Appointment Cancelled" : "Refuse"}</button>
-                  </div>
-                </div>
-              :
-                ''
-              }
-              {currentUser.role === 'user'
-              ?
-              <div className="flex w-full justify-end">
-                <div className="flex flex-col justify-end gap-3">
-                  <button className={`bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12`} disabled={appointment.status === 'Cancelled'}>Modifier</button>
-                  <button className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled'}>Consulter Facture</button>
-                  <button onClick={() => handleCancelAppointment(appointment._id)} className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled'}>{appointment.status === 'Cancelled' ?" Appointment Cancelled" : "Cancel Appointment"}</button>
-                </div>
-              </div>
-              :
-                ''
-              }
+          {/* Conditional Rendering for No Appointments */}
+          {!appointments.length ? (
+            <div className="flex justify-center items-center text-center p-10">
+              <p className="text-xl text-red-500">
+                Aucune intervention programmée trouvée.
+                {/* https://www.shutterstock.com/shutterstock/photos/1874828509/display_1500/stock-photo-profile-of-a-young-brown-tabby-cat-on-a-warm-gray-background-1874828509.jpg */}
+              </p>
             </div>
-          ))}
-        </div>
+            ) : (
+            <div className='flex flex-col gap-10 p-10'>
+              {appointments.map((appointment) => (
+                <div key={appointment._id} className={`flex flex-row gap-10 w-full ${appointment.status === 'Pending' ? 'bg-orange-200' : appointment.status === 'Accepted' ? 'bg-green-200' : ''} ${appointment.status === 'Cancelled' || appointment.status === 'Refused' ? `bg-red-200 opacity-50` : ``} rounded-xl p-5`}>
+                  {/* PROFILE IMAGES */}
+                  {currentUser.role === 'technician'
+                  ? 
+                  <img 
+                    src={appointment.userId?.profilePicture || 'default-technician.jpg'} 
+                    alt={appointment.userId?.first_name || 'Technician'} 
+                    className='object-cover max-w-44 max-h-44 rounded-xl'
+                  />
+                  :
+                  ''
+                  }
+
+                  {currentUser.role === 'user'
+                  ? <img 
+                    src={appointment.technicianId?.profilePicture || 'default-user.jpg'} 
+                    alt={appointment.technicianId?.first_name || 'User'} 
+                    className='object-cover max-w-44 max-h-44 rounded-xl'
+                    />
+                  :
+                  ''
+                  }
+
+                  {/* APPOINTMENT INFORMATION */}
+
+                  {currentUser.role === 'technician'
+                  ? 
+                  <div className= 'flex flex-col justify-between w-fit whitespace-nowrap'> 
+                    <h3 className='text-2xl'>Client {appointment.userId?.first_name || 'Technician Name'}</h3>
+                    <p>Date: {new Date(appointment.date).toLocaleString('fr-FR')}</p>
+
+                    {appointment.status === 'Cancelled' || appointment.status === 'Refused'
+                    ? <p className={`w-fit p-1 font-bold  uppercase shadow-md	 text-red-600`}>Status: {appointment.status}</p>
+                    :''
+                    }
+                    {appointment.status === 'Pending' || appointment.status === 'In Progress'
+                    ? <p className={`w-fit p-1 font-bold  uppercase shadow-md text-yellow-600`}>Status: {appointment.status}</p>
+                    : ''
+                    }
+                    {appointment.status === 'Accepted'
+                    ? <p className={`w-fit p-1 font-bold  uppercase shadow-md	 text-green-600`}>Status: {appointment.status}</p>
+                    : ''
+                    }
+                    <p>Détails: {appointment.services.join(', ')}</p>
+                  </div>
+                  :
+                  ''
+                  }
+                  
+                  {currentUser.role === 'user'
+                  ? 
+                  <div className= 'flex flex-col justify-between w-fit whitespace-nowrap'> 
+                    <h3 className='text-2xl'>Technician {appointment.technicianId?.first_name || 'Technician Name'}</h3>
+                    <p>Date: {new Date(appointment.date).toLocaleString('fr-FR')}</p>
+                    {appointment.status === 'Cancelled' || appointment.status === 'Refused'
+                    ? <p className={`w-fit p-1 font-bold  uppercase shadow-md	 text-red-600`}>Status: {appointment.status}</p>
+                    :''
+                    }
+                    {appointment.status === 'Pending' || appointment.status === 'In Progress'
+                    ? <p className={`w-fit p-1 font-bold  uppercase shadow-md	 text-yellow-600`}>Status: {appointment.status}</p>
+                    : ''
+                    }
+                    {appointment.status === 'Accepted'
+                    ? <p className={`w-fit p-1 font-bold  uppercase shadow-md	 text-green-600`}>Status: {appointment.status}</p>
+                    : ''
+                    }
+                    <p>Détails: {appointment.services.join(', ')}</p>
+                  </div>
+                  :
+                  ''
+                  }
+
+                  {/* BUTTONS */}
+                  {currentUser.role === 'technician'
+                  ?
+                    <div className="flex w-full justify-end">
+                      <div className="flex flex-col justify-end gap-3">
+                        <button onClick={() => handleAcceptAppointment(appointment._id)} className={`bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12`} disabled={appointment.status === 'Cancelled' || appointment.status === 'Refused'}>{appointment.status === 'Cancelled' ?" Appointment Cancelled" : appointment.status === 'Refused' ? "Appointment Refused" : "Accept"}</button>
+                        <button onClick={() => handleRefuseAppointment(appointment._id)} className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled' || appointment.status === 'Refused'}>{appointment.status === 'Cancelled' ? " Appointment Cancelled" : "Refuse"}</button>
+                      </div>
+                    </div>
+                  :
+                    ''
+                  }
+                  {currentUser.role === 'user'
+                  ?
+                  <div className="flex w-full justify-end">
+                    <div className="flex flex-col justify-end gap-3">
+                      <button className={`bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12`} disabled={appointment.status === 'Cancelled' || appointment.status === 'Refused'}>Modifier</button>
+                      <button className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled' || appointment.status === 'Refused'}>Consulter Facture</button>
+                      <button onClick={() => handleCancelAppointment(appointment._id)} className='bg-red-700 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12' disabled={appointment.status === 'Cancelled' || appointment.status === 'Refused'}>{appointment.status === 'Cancelled' ?" Appointment Cancelled" : "Cancel Appointment"}</button>
+                    </div>
+                  </div>
+                  :
+                    ''
+                  }
+                </div>
+              ))}
+            </div>
+          )}
       </div>
     </div>
   );

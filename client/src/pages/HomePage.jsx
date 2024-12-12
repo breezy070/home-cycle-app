@@ -1,4 +1,5 @@
 import Banner from '../components/Banner'
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
   return (
@@ -14,9 +15,11 @@ export default function HomePage() {
           <div className='flex flex-row gap-10'>
             <img src="src/assets/bike14.jpg" alt="" className='object-cover size-42 max-w-sm'/>
             <div className='flex flex-col justify-between max-w-sm'>
-              <h3 className='text-2xl'>Reparation de Vélos à domicile</h3>
+              <h3 className='text-2xl'>Reparation & Manutention de Vélos à domicile</h3>
               <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum eum quam vero eius repellat unde fugiat iusto, optio voluptatem excepturi a id sit debitis labore praesentium impedit nulla sequi quos.</p>
-              <button className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95'>Prendre rendez-vous</button>
+              <Link to={'/schedule-appointment'}>
+                <button className='bg-green-700 text-white p-3 rounded-lg uppercase hover:opacity-95'>Prendre rendez-vous</button>
+              </Link>
             </div>
           </div>
           <div className='flex flex-row gap-10'>
