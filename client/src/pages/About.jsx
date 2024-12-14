@@ -7,7 +7,7 @@ export default function About() {
       <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-green-600">About Our Web App</h1>
+          <h1 className="text-4xl font-bold text-green-600">About HomeCycleHome</h1>
           <p className="text-lg text-gray-600 mt-2">
             Making bike repairs and parts purchases seamless and efficient.
           </p>

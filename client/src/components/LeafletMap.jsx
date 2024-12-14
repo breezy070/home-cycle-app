@@ -2,10 +2,12 @@ import { MapContainer, TileLayer, Polygon, GeoJSON, useMapEvents, Tooltip } from
 import { useState } from 'react';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
+import LeafletMapReachability from './LeafletMapReachability';
 
 export default function LeafletMap({ polygon, onPolygonChange, selectedTechnician, allZones }) {
 
   const [zone, setZone] = useState([]); // Array of [lat, lng]
+  const [reachabilityZones, setReachabilityZones] = useState(null);
   const colorPalette = [
     '#FF5733', // Red
     '#33FF57', // Green
@@ -42,6 +44,7 @@ export default function LeafletMap({ polygon, onPolygonChange, selectedTechnicia
     }
     try {
       const coordinates = zone.map(([lat, lng]) => [lng, lat]); // Convert to GeoJSON format
+      // const coordinates = reachabilityZones[0]?.geometry?.coordinates;
       await axios.post('/api/admin/technician-assign-zone', {
         technicianId: selectedTechnician,
         coordinates: [coordinates], // GeoJSON Polygon requires an array of arrays
@@ -136,6 +139,13 @@ export default function LeafletMap({ polygon, onPolygonChange, selectedTechnicia
             />
           ))}
       </MapContainer>
+      {/* <LeafletMapReachability
+        onIsolinesGenerated={(geoJSONData) => {
+          console.log('Isoline GeoJSON data:', geoJSONData);
+          setReachabilityZones(geoJSONData);
+        }}
+      /> */}
+      {/* <LeafletMapReachability/> */}
       <div className="flex flex-row mt-4 mb-4 w-full">
         <button onClick={handleSaveZone} className="bg-blue-500 text-white px-4 py-2 rounded mr-2">
           Save Zone
