@@ -1,9 +1,9 @@
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
-import { useEffect, useState } from 'react';
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import "../leaflet-reachability/reachability.css"
-import "../leaflet-reachability/leafletReachability.js"
+// import { useEffect, useState } from 'react';
+// import L from "leaflet";
+// import "leaflet/dist/leaflet.css";
+// import "../leaflet-reachability/reachability.css"
+// import "../leaflet-reachability/leafletReachability.js"
 
 
 export default function LeafletMapReachability({ onIsolinesGenerated }) {
