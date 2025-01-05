@@ -66,10 +66,6 @@ export default function TechnicianZoneAssignment() {
       };
       fetchTechnicianZone();
     }
-
-
-
-
   }, [selectedTechnician]);
 
   return (

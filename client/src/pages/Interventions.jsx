@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 
 export default function Interventions() {
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]); // To store filtered appointments
+  const [filterServices, setFilterServices] = useState('All'); // Track the selected filter
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -16,6 +18,7 @@ export default function Interventions() {
           const response = await axios.get(`/api/user/scheduled-appointments/${currentUser._id}`);
           console.log(response.data);
           setAppointments(response.data.appointments);
+          setFilteredAppointments(response.data.appointments);
         } catch (err) {
           console.error(err);
         }
@@ -25,6 +28,7 @@ export default function Interventions() {
           const response = await axios.get(`/api/technician/scheduled-technician-appointments/${currentUser._id}`);
           console.log(response.data);
           setAppointments(response.data.appointments);
+          setFilteredAppointments(response.data.appointments);
         } catch (err) {
           console.error(err);
         }
@@ -37,6 +41,17 @@ export default function Interventions() {
       fetchAppointments();
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    // Filter appointments based on the selected type
+    if (filterServices === 'All') {
+      setFilteredAppointments(appointments); // Show all appointments
+    } else {
+      setFilteredAppointments(
+        appointments.filter((appointment) => appointment.services[0] === filterServices)
+      );
+    }
+  }, [filterServices, appointments]);
 
   const handleCancelAppointment = async (appointmentId) => {
     try {
@@ -114,6 +129,10 @@ export default function Interventions() {
     console.log('Updated Appointments:', appointments);
   }, [appointments]);
 
+  const handleFilterChange = (e) => {
+    setFilterServices(e.target.value);
+  };
+
   return (
     <div>
       <div className='flex flex-col'>
@@ -122,6 +141,22 @@ export default function Interventions() {
             <button className='bg-purple-600 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12'>Prendre Rendez-vous</button>
           </Link>
         </div>
+
+        {/* Filter Input */}
+        <div className="flex justify-center p-5">
+          <label htmlFor="filter" className="mr-3 text-lg font-semibold">Filter by Status:</label>
+            <select
+              id="filter"
+              className="p-2 border border-gray-300 rounded-lg"
+              value={filterServices}
+              onChange={handleFilterChange}
+            >
+              <option value="All">All</option>
+              <option value="reparation">Reparation</option>
+              <option value="entretien">Entretien</option>
+            </select>
+        </div>
+
         <h2 className='text-3xl text-start font-semibold p-10'>Mes Interventions</h2>
           {/* Conditional Rendering for No Appointments */}
           {!appointments.length ? (
@@ -133,7 +168,7 @@ export default function Interventions() {
             </div>
             ) : (
             <div className='flex flex-col gap-10 p-10'>
-              {appointments.map((appointment) => (
+              {filteredAppointments.map((appointment) => (
                 <div key={appointment._id} className={`flex flex-row gap-10 w-full ${appointment.status === 'Pending' ? 'bg-orange-200' : appointment.status === 'Accepted' ? 'bg-green-200' : ''} ${appointment.status === 'Cancelled' || appointment.status === 'Refused' ? `bg-red-200 opacity-50` : ``} rounded-xl p-5`}>
                   {/* PROFILE IMAGES */}
                   {currentUser.role === 'technician'
