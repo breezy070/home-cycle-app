@@ -7,6 +7,10 @@ export default function Interventions() {
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]); // To store filtered appointments
   const [filterServices, setFilterServices] = useState('All'); // Track the selected filter
+
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -133,6 +137,45 @@ export default function Interventions() {
     setFilterServices(e.target.value);
   };
 
+  const fetchComments = async (appointmentId) => {
+    try {
+      const response = await axios.get(`/api/interventions/intervention-comments/${appointmentId}/comments`);
+      setComments(response.data);
+    } catch (error) {
+      console.error('Failed to fetch comments:', error);
+    }
+  };
+
+  const addComment = async (appointmentId) => {
+    try {
+
+      const userModel = currentUser.role === 'user' ? 'User' : 'Technician';
+
+      const response = await axios.post(`/api/interventions/intervention-comments/${appointmentId}/comments`, {
+        userId: currentUser._id, // Replace with current user's ID
+        text: newComment,
+        userModel: userModel,    // Specify the model (User or Technician)
+      });
+      console.log(response.data)
+      setComments(response.data); // Update comments with the latest data
+      setNewComment(''); // Clear the input field
+      fetchComments(appointmentId);
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+    }
+  };
+
+  const toggleComments = (appointmentId) => {
+    if (selectedAppointment === appointmentId) {
+      // If the selected appointment is already open, close it
+      setSelectedAppointment(null);
+    } else {
+      // Open the comments for the selected appointment
+      setSelectedAppointment(appointmentId);
+      fetchComments(appointmentId); // Fetch comments for this appointment
+    }
+  };
+
   return (
     <div>
       <div className='flex flex-col'>
@@ -196,7 +239,7 @@ export default function Interventions() {
 
                   {currentUser.role === 'technician'
                   ? 
-                  <div className= 'flex flex-col justify-between w-fit whitespace-nowrap'> 
+                  <div className= 'flex flex-col justify-between w-fit'> 
                     <h3 className='text-2xl'>Client {appointment.userId?.first_name || 'Technician Name'}</h3>
                     <p>Date: {new Date(appointment.date).toLocaleString('fr-FR')}</p>
 
@@ -213,6 +256,48 @@ export default function Interventions() {
                     : ''
                     }
                     <p>Détails: {appointment.services.join(', ')}</p>
+
+                    <button
+                      className="bg-blue-500 text-white p-2 rounded-md hover:opacity-90"
+                      onClick={() => toggleComments(appointment._id)}
+                    >
+                      {selectedAppointment === appointment._id ? "Hide Comments" : "Comments"}
+                    </button>
+
+                    {selectedAppointment === appointment._id && (
+                      <div className='mt-5 break-words max-w-sm'>
+                        <h4 className='text-xl font-semibold mb-2'>Comments</h4>
+                        <ul className='list-disc'>
+                          {comments.map((comment) => (
+                            <li key={comment._id} className='mb-2 list-none'>
+                              <p><span className={`underline font-bold ${comment.userModel === 'User' ? 'text-blue-800' : 'text-red-800'}`}>{comment.user?.first_name}:</span> {comment.text}<span className='text-gray-500'><br></br><span className='text-xs'>{new Date(comment.createdAt).toLocaleString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  second: '2-digit',
+                                })}</span></span></p>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className='flex flex-col'>
+                          <textarea
+                            className='border p-2 w-full mt-3 rounded-md'
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder='Write a comment...'
+                          />
+                          <button
+                            className='bg-green-500 text-white p-2 mt-2 rounded-md hover:opacity-90'
+                            onClick={() => addComment(appointment._id)}
+                          >
+                            Add Comment
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                   </div>
                   :
                   ''
@@ -220,7 +305,7 @@ export default function Interventions() {
                   
                   {currentUser.role === 'user'
                   ? 
-                  <div className= 'flex flex-col justify-between w-fit whitespace-nowrap'> 
+                  <div className= 'flex flex-col justify-between w-fit'> 
                     <h3 className='text-2xl'>Technician {appointment.technicianId?.first_name || 'Technician Name'}</h3>
                     <p>Date: {new Date(appointment.date).toLocaleString('fr-FR')}</p>
                     {appointment.status === 'Cancelled' || appointment.status === 'Refused'
@@ -236,6 +321,47 @@ export default function Interventions() {
                     : ''
                     }
                     <p>Détails: {appointment.services.join(', ')}</p>
+                    
+                    <button
+                      className="bg-blue-500 text-white p-2 rounded-md hover:opacity-90"
+                      onClick={() => toggleComments(appointment._id)}
+                    >
+                      {selectedAppointment === appointment._id ? "Hide Comments" : "Comments"}
+                    </button>
+
+                    {selectedAppointment === appointment._id && (
+                      <div className='mt-5 break-words max-w-sm'>
+                        <h4 className='text-xl font-semibold mb-2'>Comments</h4>
+                        <ul className='list-disc'>
+                          {comments.map((comment) => (
+                            <li key={comment._id} className='mb-2 list-none'>
+                              <p><span className={`underline font-bold ${comment.userModel === 'User' ? 'text-blue-800' : 'text-red-800'}`}>{comment.user?.first_name}:</span> {comment.text}<span className='text-gray-500'><br></br><span className='text-xs'>{new Date(comment.createdAt).toLocaleString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  second: '2-digit',
+                                })}</span></span></p>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className='flex flex-col'>
+                          <textarea
+                            className='border p-2 w-full mt-3 rounded-md'
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder='Write a comment...'
+                          />
+                          <button
+                            className='bg-green-500 text-white p-2 mt-2 rounded-md hover:opacity-90'
+                            onClick={() => addComment(appointment._id)}
+                          >
+                            Add Comment
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   :
                   ''

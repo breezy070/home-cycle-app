@@ -5,6 +5,7 @@ import userRoutes from './routes/userRoute.js';
 import technicianRoutes from './routes/technicianRoute.js'
 import adminRoutes from './routes/adminRoute.js'
 import authRoutes from './routes/authRoute.js';
+import interventionRoutes from './routes/interventionRoute.js'
 import cookieParser from 'cookie-parser';
 import logRequestMiddleware from './utils/logRequestMiddleware.js';
 
@@ -33,7 +34,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/technician", technicianRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes)
-// app.use("/api/interventions", interventionRoutes)
+app.use("/api/interventions", interventionRoutes)
 
 //error handling with middleware and function
 app.use((err, req, res, next) => {
