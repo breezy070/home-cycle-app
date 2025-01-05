@@ -4,6 +4,10 @@ import About from './pages/About';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
+import ProfileById from './pages/ProfileById'
+import GestionInterventions from "./pages/GestionInterventions";
+import GestionProduits from "./pages/GestionProduits";
+import GestionUtilisateurs from "./pages/GestionUtilisateurs";
 import PageNotFound from "./pages/PageNotFound";
 import Interventions from "./pages/Interventions";
 import ScheduleAppointment from "./pages/ScheduleAppointment";
@@ -56,7 +60,11 @@ export default function App() {
           </Route>
 
         <Route element={<PrivateRoute allowedRoles={['admin']} />}>
-        <Route path="/technician-zone-assignment" element={<TechnicianZoneAssignment />} />
+          <Route path="/technician-zone-assignment" element={<TechnicianZoneAssignment />} />
+          <Route path="/gestion-interventions" element={<GestionInterventions />} />
+          <Route path="/gestion-produits" element={<GestionProduits />} />
+          <Route path="/gestion-utilisateurs" element={<GestionUtilisateurs />} />
+          <Route path="/profile-by-id/:userId" element={<ProfileById />} />
 
         </Route>
       </Routes>

@@ -31,9 +31,9 @@ export const getTechnicianAppointments = async (req, res, next ) => {
 
 //update technician
 export const updateTechnician = async (req, res, next) => {
-    if (req.technician.id !== req.params.id) {
-        return next(errorHandler(401, 'You can only update YOUR account !'));
-    }
+    // if (req.technician.id !== req.params.id) {
+    //     return next(errorHandler(401, 'You can only update YOUR account !'));
+    // }
 
     try {
         if (req.body.password) {
@@ -62,9 +62,9 @@ export const updateTechnician = async (req, res, next) => {
 };
 
 export const deleteTechnician = async (req, res, next) => {
-    if (req.technician.id !== req.params.id) {
-        return next(errorHandler(401, 'You can only delete your account'));
-    }
+    // if (req.technician.id !== req.params.id) {
+    //     return next(errorHandler(401, 'You can only delete your account'));
+    // }
 
     try {
         await Technician.findByIdAndDelete(req.params.id);

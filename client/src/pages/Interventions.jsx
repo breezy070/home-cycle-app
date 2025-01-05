@@ -187,7 +187,7 @@ export default function Interventions() {
 
         {/* Filter Input */}
         <div className="flex justify-center p-5">
-          <label htmlFor="filter" className="mr-3 text-lg font-semibold">Filter by Status:</label>
+          <label htmlFor="filter" className="mr-3 text-lg font-semibold">Filter by Service:</label>
             <select
               id="filter"
               className="p-2 border border-gray-300 rounded-lg"

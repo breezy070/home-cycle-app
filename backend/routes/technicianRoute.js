@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/');
 router.get('/scheduled-technician-appointments/:technicianId', verifyToken, getTechnicianAppointments)
-router.post('/update/technician/:id', verifyToken, updateTechnician);
+router.post('/update/:id', verifyToken, updateTechnician);
 router.delete('/delete/technician/:id', verifyToken, deleteTechnician);
 
 export default router;

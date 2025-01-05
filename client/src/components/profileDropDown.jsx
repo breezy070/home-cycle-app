@@ -87,12 +87,53 @@ const ProfileDropdown = (props) => {
               :
               ''
             }
-            <Link onClick={handleCloseDropdown} to='/interventions' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-            <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
-                <span className="fa-solid fa-calendar-check w-5 h-5"></span>
-                <span>Interventions</span>
-            </div>
-            </Link>
+            {currentUser?.role === "user" || currentUser?.role === "technician"
+              ?
+              <Link onClick={handleCloseDropdown} to='/interventions' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
+                    <span className="fa-solid fa-calendar-check w-5 h-5"></span>
+                    <span>Interventions</span>
+                </div>
+              </Link>
+              :
+              ''
+            }
+            {currentUser?.role === "admin"
+              ?
+              <Link onClick={handleCloseDropdown} to='/gestion-utilisateurs' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
+                  <span className="fa-solid fa-users w-5 h-5"></span>
+                  <span>Gestion Utilisateurs</span>
+                </div>
+              </Link>
+              :
+              ''
+            }
+
+            {currentUser?.role === "admin"
+              ?
+              <Link onClick={handleCloseDropdown} to='/gestion-interventions' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
+                  <span className="fa-solid fa-calendar-check w-5 h-5"></span>
+                  <span>Gestion Interventions</span>
+                </div>
+              </Link>
+              :
+              ''
+            }
+
+            {currentUser?.role === "admin"
+              ?
+              <Link onClick={handleCloseDropdown} to='/gestion-produits' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
+                  <span className="fa-solid fa-barcode w-5 h-5"></span>
+                  <span>Gestion Produits</span>
+                </div>
+              </Link>
+              :
+              ''
+            }
+
             {currentUser?.role === "user"
               ?
             <Link onClick={handleCloseDropdown} to='/factures' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">

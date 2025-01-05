@@ -1,5 +1,7 @@
 import Admin from "../models/adminModel.js";
 import Technician from "../models/technicianModel.js";
+import User from "../models/userModel.js";
+import Intervention from "../models/interventionModel.js";
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 
@@ -15,6 +17,54 @@ export const getAllTechnicians = async (req, res, next ) => {
         res.status(500).json({ message: 'Server error' });
       }
 }
+
+export const getAllAdmins = async (req, res, next) => {
+  try {
+    const admins = await Admin.find(); // Fetch all admins
+    res.status(200).json({ admins });
+  } catch (error) {
+    console.error('Error fetching admins:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+export const getAllClients = async (req, res, next) => {
+  try {
+    const clients = await User.find(); // Fetch all clients
+    res.status(200).json({ clients });
+  } catch (error) {
+    console.error('Error fetching clients:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+export const getAllInterventions = async (req, res, next) => {
+  try {
+    const interventions = await Intervention.find(); // Fetch all interventions
+    res.status(200).json({ interventions });
+  } catch (error) {
+    console.error('Error fetching interventions:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+export const getClientById = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Extract client ID from route parameters
+    const client = await User.findById(id); // Fetch client by ID
+
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+
+    res.status(200).json({ client });
+  } catch (error) {
+    console.error('Error fetching client:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+
 
 export const getTechnicianZone = async (req, res, next ) => {
     try {
@@ -90,9 +140,9 @@ export const assignTechnicianZone = async (req, res, next ) => {
 
 //update admin
 export const updateAdmin = async (req, res, next) => {
-    if (req.admin.id !== req.params.id) {
-        return next(errorHandler(401, 'You can only update YOUR account !'));
-    }
+    // if (req.admin.id !== req.params.id) {
+    //     return next(errorHandler(401, 'You can only update YOUR account !'));
+    // }
 
     try {
         if (req.body.password) {
@@ -121,9 +171,9 @@ export const updateAdmin = async (req, res, next) => {
 };
 
 export const deleteAdmin = async (req, res, next) => {
-    if (req.admin.id !== req.params.id) {
-        return next(errorHandler(401, 'You can only delete your account'));
-    }
+    // if (req.admin.id !== req.params.id) {
+    //     return next(errorHandler(401, 'You can only delete your account'));
+    // }
 
     try {
         await Admin.findByIdAndDelete(req.params.id);
