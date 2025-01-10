@@ -1,3 +1,17 @@
+[INSTALLATION]
+
+1. installer nodejs v18+
+2. installer mongodb
+3. NPM de node
+4. installer vitejs
+
+5. se placer à la racine du projet et lancer npm install pour intaller les dependences backend
+6. se placer dans le dossier client, et faire npm intall pour installer les depedences frontend
+7. pour lancer le backend : se placer à la racine du projet > npm run dev
+8. pour lancer le front end : se placer dans le dossier client > npm run dev
+
+
+
 HomeCycl’Home
 Réparation et entretien de vélos à domicile
 
