@@ -52,12 +52,12 @@ export default function App() {
             <Route path="/interventions" element={<Interventions />} />
             <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
         </Route> */}
-          <Route element={<PrivateRoute allowedRoles={['user', 'admin', 'technician']}/>}>
-             <Route path="/profile" element={<Profile />} />
-             <Route path="/interventions" element={<Interventions />} />
-             <Route path="/factures" element={<Factures />} />
-             <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
-          </Route>
+        <Route element={<PrivateRoute allowedRoles={['user', 'admin', 'technician']}/>}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/interventions" element={<Interventions />} />
+            <Route path="/factures" element={<Factures />} />
+            <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
+        </Route>
 
         <Route element={<PrivateRoute allowedRoles={['admin']} />}>
           <Route path="/technician-zone-assignment" element={<TechnicianZoneAssignment />} />

@@ -152,7 +152,7 @@ export default function Interventions() {
       const userModel = currentUser.role === 'user' ? 'User' : 'Technician';
 
       const response = await axios.post(`/api/interventions/intervention-comments/${appointmentId}/comments`, {
-        userId: currentUser._id, // Replace with current user's ID
+        userId: currentUser._id,
         text: newComment,
         userModel: userModel,    // Specify the model (User or Technician)
       });

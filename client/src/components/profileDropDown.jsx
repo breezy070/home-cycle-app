@@ -122,7 +122,7 @@ const ProfileDropdown = (props) => {
               ''
             }
 
-            {currentUser?.role === "admin"
+            {/* {currentUser?.role === "admin"
               ?
               <Link onClick={handleCloseDropdown} to='/gestion-produits' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
@@ -132,7 +132,7 @@ const ProfileDropdown = (props) => {
               </Link>
               :
               ''
-            }
+            } */}
 
             {currentUser?.role === "user"
               ?

@@ -1,9 +1,11 @@
+import axios from 'axios';
+import bcryptjs from 'bcryptjs';
 import Admin from "../models/adminModel.js";
 import Technician from "../models/technicianModel.js";
 import User from "../models/userModel.js";
 import Intervention from "../models/interventionModel.js";
 import { errorHandler } from "../utils/error.js";
-import bcryptjs from 'bcryptjs';
+
 
 export const getAllTechnicians = async (req, res, next ) => {
     // res.json({
@@ -38,6 +40,156 @@ export const getAllClients = async (req, res, next) => {
   }
 }
 
+// export const addUsers = async (req,res,next) => {
+//   const { role, first_name, last_name, email, address, password } = req.body;
+
+//   try {
+//     // Validate required fields
+//     if (!role || !first_name || !last_name || !email || !password) {
+//       return res.status(400).json({ success: false, message: 'All fields are required.' });
+//     }
+
+//     // Check if the user already exists
+//     const existingUser =
+//       (await User.findOne({ email })) ||
+//       (await Technician.findOne({ email })) ||
+//       (await Admin.findOne({ email }));
+
+//     if (existingUser) {
+//       return res.status(400).json({ success: false, message: 'Email already in use.' });
+//     }
+
+//     // Select the model dynamically based on the role
+//     let Model;
+//     switch (role.toLowerCase()) {
+//       case 'user':
+//         Model = User;
+//         break;
+//       case 'technician':
+//         Model = Technician;
+//         break;
+//       case 'admin':
+//         Model = Admin;
+//         break;
+//       default:
+//         return res.status(400).json({ success: false, message: 'Invalid role.' });
+//     }
+
+//     // const saltRounds = 10;
+//     // newUser.password = await bcrypt.hash(password, saltRounds);
+
+//     // Create a new user in the appropriate collection
+//     const newUser = new Model({
+//       first_name,
+//       last_name,
+//       email,
+//       address,
+//       password, // You should hash passwords before saving them
+//     });
+
+//     await newUser.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: `${role} created successfully.`,
+//       user: newUser,
+//     });
+//   } catch (error) {
+//     console.error('Error adding user:', error);
+//     res.status(500).json({ success: false, message: 'Server error.' });
+//   }
+// }
+
+
+
+
+export const addUsers = async (req, res, next) => {
+  const { role, first_name, last_name, email, address, password } = req.body;
+
+  try {
+    // Validate required fields
+    if (!role || !first_name || !last_name || !email || !password || !address) {
+      return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+
+    // Check if the user already exists
+    const existingUser =
+      (await User.findOne({ email })) ||
+      (await Technician.findOne({ email })) ||
+      (await Admin.findOne({ email }));
+
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'Email already in use.' });
+    }
+
+    // Select the model dynamically
+    let Model;
+    switch (role.toLowerCase()) {
+      case 'user':
+        Model = User;
+        break;
+      case 'technician':
+        Model = Technician;
+        break;
+      case 'admin':
+        Model = Admin;
+        break;
+      default:
+        return res.status(400).json({ success: false, message: 'Invalid role.' });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcryptjs.hash(password, 10);
+
+    // Geocode the address
+    const geocodeAddress = async (address) => {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`;
+
+      try {
+        const response = await axios.get(url);
+        const results = response.data;
+        if (results.length > 0) {
+          const { lat, lon } = results[0];
+          return [parseFloat(lon), parseFloat(lat)];
+        } else {
+          console.log('Geocoding failed: No results found.');
+          return [null, null];
+        }
+      } catch (error) {
+        console.log(`Geocoding error: ${error.message}`);
+        return [null, null];
+      }
+    };
+
+    const [longitude, latitude] = await geocodeAddress(address);
+
+    // Create user with structured address
+    const newUser = new Model({
+      first_name,
+      last_name,
+      email,
+      password: hashedPassword,
+      address: {
+        type: 'Point',
+        addressString: address,
+        coordinates: [longitude, latitude],
+      },
+    });
+
+    await newUser.save();
+
+    res.status(201).json({
+      success: true,
+      message: `${role} created successfully.`,
+      user: newUser,
+    });
+  } catch (error) {
+    console.error('Error adding user:', error);
+    res.status(500).json({ success: false, message: 'Server error.' });
+  }
+};
+
+
 export const getAllInterventions = async (req, res, next) => {
   try {
     const interventions = await Intervention.find(); // Fetch all interventions
@@ -48,9 +200,33 @@ export const getAllInterventions = async (req, res, next) => {
   }
 }
 
+export const deleteIntervention = async (req, res, next) => {
+  try {
+    // Find the intervention to retrieve the associated technician ID
+    const intervention = await Intervention.findById(req.params.id);
+
+    if (!intervention) {
+      return res.status(404).json({ success: false, message: 'Intervention not found' });
+    }
+
+    const technicianId = intervention.technicianId; // Assuming `technician` field stores the Technician ID
+
+    await Intervention.findByIdAndDelete(req.params.id);
+
+    // Update the technician's availability
+    if (technicianId) {
+      await Technician.findByIdAndUpdate(technicianId, { availableStatus: true });
+    }
+    res.status(200).json('Intervention has been deleted and technician is again available');
+  } catch (error) {
+    next(error);
+  }
+}
+
 export const getClientById = async (req, res, next) => {
   try {
     const { id } = req.params; // Extract client ID from route parameters
+    console.log(req.cookies.access_token);
     const client = await User.findById(id); // Fetch client by ID
 
     if (!client) {
@@ -112,7 +288,7 @@ export const assignTechnicianZone = async (req, res, next ) => {
     }
 
     try {
-        // Find the technician by ID and update their zone
+        // Find the technician by ID and update their zone1
         const technician = await Technician.findByIdAndUpdate(
             technicianId,  // The technician's id (to identify which technician to update)
             {

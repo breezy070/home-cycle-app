@@ -260,7 +260,7 @@ export default function LeafletMap({ polygon, onPolygonChange, selectedTechnicia
           ))}
       </MapContainer>
       <div className="flex flex-row mt-4 mb-4 w-full">
-        <button onClick={handleSaveZone} className="bg-blue-500 text-white px-4 py-2 rounded mr-2">
+        <button onClick={handleSaveZone} className="bg-green-500 text-white px-4 py-2 rounded mr-2">
           Save Zone
         </button>
         <button onClick={handleResetZone} className="bg-red-500 text-white px-4 py-2 rounded">
