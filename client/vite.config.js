@@ -11,5 +11,8 @@ export default defineConfig({
         secure: false,
       }
     }
-  }
+  },
+  alias: {
+      '@': path.resolve(__dirname, './src'), // 👈 maps @ to /src
+  },
 })

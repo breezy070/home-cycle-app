@@ -5,7 +5,7 @@ import Admin from '../models/adminModel.js';
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
-import axios from '@/api/axiosInstance';
+import axios from 'axios';
 
 export const test = (req, res) => {
     res.json({
