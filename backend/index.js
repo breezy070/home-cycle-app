@@ -43,6 +43,8 @@ app.listen(PORT, () => {
 
 app.use(logRequestMiddleware);
 
+app.set('trust proxy', 1);
+
 app.use("/api/user", userRoutes);
 app.use("/api/technician", technicianRoutes);
 app.use("/api/admin", adminRoutes);
