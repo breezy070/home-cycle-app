@@ -1,6 +1,6 @@
 import { useState, useEffect  } from 'react';
 import { useSelector } from "react-redux";
-import axios from '@/api/axiosInstance';
+import api from '@/api/axiosInstance';
 
 export default function InterventionScheduler() {
     const [userId, setUserId] = useState('');
@@ -32,7 +32,7 @@ export default function InterventionScheduler() {
       });
 
       try {
-        const response = await axios.post('/api/user/schedule-appointment', {
+        const response = await api.post('/api/user/schedule-appointment', {
           userId: currentUser._id,
           date,
           services,

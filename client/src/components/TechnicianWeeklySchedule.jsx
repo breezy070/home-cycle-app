@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from '@/api/axiosInstance';
+import api from '@/api/axiosInstance';
 
 const TechnicianWeeklySchedule = ({ technicianId, onTimeSlotSelect }) => {
   const [weekStart, setWeekStart] = useState(new Date());
@@ -8,7 +8,7 @@ const TechnicianWeeklySchedule = ({ technicianId, onTimeSlotSelect }) => {
   const fetchAvailability = async () => {
     try {
       const start = weekStart.toISOString().split('T')[0];
-      const response = await axios.get(`/api/technicians/${technicianId}/availability`, {
+      const response = await api.get(`/api/technicians/${technicianId}/availability`, {
         params: { weekStart: start },
       });
       setAvailability(response.data);

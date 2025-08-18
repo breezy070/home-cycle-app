@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import axios from '@/api/axiosInstance';
+import api from '@/api/axiosInstance';
 import { useSelector } from 'react-redux';
 
 export default function Interventions() {
@@ -19,7 +19,7 @@ export default function Interventions() {
       if (currentUser.role === 'user') {
         console.log("displaying user appointments")
         try {
-          const response = await axios.get(`/api/user/scheduled-appointments/${currentUser._id}`);
+          const response = await api.get(`/api/user/scheduled-appointments/${currentUser._id}`);
           console.log(response.data);
           setAppointments(response.data.appointments);
           setFilteredAppointments(response.data.appointments);
@@ -29,7 +29,7 @@ export default function Interventions() {
       } else if (currentUser.role === 'technician') {
         console.log("displaying technician appointments")
         try {
-          const response = await axios.get(`/api/technician/scheduled-technician-appointments/${currentUser._id}`);
+          const response = await api.get(`/api/technician/scheduled-technician-appointments/${currentUser._id}`);
           console.log(response.data);
           setAppointments(response.data.appointments);
           setFilteredAppointments(response.data.appointments);
@@ -60,7 +60,7 @@ export default function Interventions() {
   const handleCancelAppointment = async (appointmentId) => {
     try {
       // Make an API call to update the status of the appointment
-      const response = await axios.put(`/api/user/scheduled-appointments/update/${appointmentId}`, {
+      const response = await api.put(`/api/user/scheduled-appointments/update/${appointmentId}`, {
         status: 'Cancelled', // or pass this as part of the request body
       });
   
@@ -84,7 +84,7 @@ export default function Interventions() {
   const handleAcceptAppointment = async (appointmentId) => {
     try {
       // Make an API call to update the status of the appointment
-      const response = await axios.put(`/api/user/scheduled-appointments/update/${appointmentId}`, {
+      const response = await api.put(`/api/user/scheduled-appointments/update/${appointmentId}`, {
         status: 'Accepted',
       });
   
@@ -108,7 +108,7 @@ export default function Interventions() {
   const handleRefuseAppointment = async (appointmentId) => {
     try {
       // Make an API call to update the status of the appointment
-      const response = await axios.put(`/api/user/scheduled-appointments/update/${appointmentId}`, {
+      const response = await api.put(`/api/user/scheduled-appointments/update/${appointmentId}`, {
         status: 'Refused', // or pass this as part of the request body
       });
   
@@ -139,7 +139,7 @@ export default function Interventions() {
 
   const fetchComments = async (appointmentId) => {
     try {
-      const response = await axios.get(`/api/interventions/intervention-comments/${appointmentId}/comments`);
+      const response = await api.get(`/api/interventions/intervention-comments/${appointmentId}/comments`);
       setComments(response.data);
     } catch (error) {
       console.error('Failed to fetch comments:', error);
@@ -151,7 +151,7 @@ export default function Interventions() {
 
       const userModel = currentUser.role === 'user' ? 'User' : 'Technician';
 
-      const response = await axios.post(`/api/interventions/intervention-comments/${appointmentId}/comments`, {
+      const response = await api.post(`/api/interventions/intervention-comments/${appointmentId}/comments`, {
         userId: currentUser._id,
         text: newComment,
         userModel: userModel,    // Specify the model (User or Technician)

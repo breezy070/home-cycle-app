@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Polygon, GeoJSON, useMapEvents } from 'react-leaflet';
 import { useState, useEffect, useRef } from 'react';
-import axios from '@/api/axiosInstance';
+import api from '@/api/axiosInstance';
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../leaflet-reachability/reachability.css"
@@ -117,7 +117,7 @@ export default function LeafletMap({ polygon, onPolygonChange, selectedTechnicia
   //     const coordinates = zone.map(([lat, lng]) => [lng, lat]); // Convert to GeoJSON format
   //     // const coordinates = reachabilityZones[0]?.geometry?.coordinates;
   //     console.log("coordinates: ",coordinates);
-  //     await axios.post('/api/admin/technician-assign-zone', {
+  //     await api.post('/api/admin/technician-assign-zone', {
   //       technicianId: selectedTechnician,
   //       coordinates: [coordinates], // GeoJSON Polygon requires an array of arrays
   //     });
@@ -164,7 +164,7 @@ export default function LeafletMap({ polygon, onPolygonChange, selectedTechnicia
       console.log("Saving coordinates: ", coordinates);
   
       // Save the zone
-      await axios.post('/api/admin/technician-assign-zone', {
+      await api.post('/api/admin/technician-assign-zone', {
         technicianId: selectedTechnician,
         coordinates, // Already structured as GeoJSON (array of arrays)
       });
