@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '@/api/axiosInstance';
 import bcryptjs from 'bcryptjs';
 import Admin from "../models/adminModel.js";
 import Technician from "../models/technicianModel.js";

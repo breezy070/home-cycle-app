@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from "react"
 import { useDispatch } from "react-redux";
 import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOut } from "../redux/user/userSlice";
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '@/api/axiosInstance';
 
 export default function Profile() {
   const fileRef = useRef(null);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TechnicianWeeklySchedule from './TechnicianWeeklySchedule';
 import { useSelector } from "react-redux";
-import axios from 'axios';
+import axios from '@/api/axiosInstance';
 
 const ScheduleAppointment = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);

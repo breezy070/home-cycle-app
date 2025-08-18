@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Polygon, GeoJSON, useMapEvents } from 'react-leaflet';
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import axios from '@/api/axiosInstance';
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../leaflet-reachability/reachability.css"

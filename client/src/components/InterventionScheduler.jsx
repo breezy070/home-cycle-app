@@ -1,6 +1,6 @@
 import { useState, useEffect  } from 'react';
 import { useSelector } from "react-redux";
-import axios from 'axios';
+import axios from '@/api/axiosInstance';
 
 export default function InterventionScheduler() {
     const [userId, setUserId] = useState('');
