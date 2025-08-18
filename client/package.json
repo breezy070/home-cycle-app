@@ -12,7 +12,9 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@reduxjs/toolkit": "^2.3.0",
+    "axios": "^1.11.0",
     "firebase": "^11.0.2",
+    "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
