@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import api from '@/api/axiosInstance';
+// import api from '@/api/axiosInstance';
+import axios, { all } from 'axios';
+
 import { useSelector } from 'react-redux';
 
 export default function Interventions() {
@@ -19,7 +21,7 @@ export default function Interventions() {
       if (currentUser.role === 'user') {
         console.log("displaying user appointments")
         try {
-          const response = await api.get(`/api/user/scheduled-appointments/${currentUser._id}`);
+          const response = await axios.get(`/api/user/scheduled-appointments/${currentUser._id}`);
           console.log(response.data);
           setAppointments(response.data.appointments);
           setFilteredAppointments(response.data.appointments);
