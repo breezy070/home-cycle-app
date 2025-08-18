@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors'
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoute.js';
@@ -20,14 +21,25 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 
 const app = express();
 
+//CORS
+app.use(cors({
+  origin: ['https://homecyclehome.netlify.app', 'http://localhost:5173/'],
+  credentials: true
+}));
+
 //allowing sending request json to the backend
 app.use(express.json());
 
 app.use(cookieParser());
 
-app.listen(3000, ()=> {
-    console.log('Server listening on port 3000');
-})
+// app.listen(3000, ()=> {
+//     console.log('Server listening on port 3000');
+// })
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
 
 app.use(logRequestMiddleware);
 
