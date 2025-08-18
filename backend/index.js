@@ -21,6 +21,8 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 //CORS
 app.use(cors({
   origin: ['https://homecyclehome.netlify.app', 'http://localhost:5173/'],
@@ -43,7 +45,7 @@ app.listen(PORT, () => {
 
 app.use(logRequestMiddleware);
 
-app.set('trust proxy', 1);
+
 
 app.use("/api/user", userRoutes);
 app.use("/api/technician", technicianRoutes);

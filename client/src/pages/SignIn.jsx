@@ -50,7 +50,6 @@ export default function SignIn() {
       else navigate("/");
 
       console.log(data);
-      console.l
     } catch (error) {
       console.log(error)
       console.log(error.message)
