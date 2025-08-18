@@ -85,7 +85,7 @@ export default function Interventions() {
     try {
       // Make an API call to update the status of the appointment
       const response = await axios.put(`/api/user/scheduled-appointments/update/${appointmentId}`, {
-        status: 'Accepted', // or pass this as part of the request body
+        status: 'Accepted',
       });
   
       if (response.status === 200) {
@@ -100,7 +100,7 @@ export default function Interventions() {
         );
       }
     } catch (error) {
-      console.error('Failed to refuse appointment:', error);
+      console.error('Failed to accept appointment:', error);
       // Optionally, handle errors (e.g., show an error message)
     }
   };
@@ -179,11 +179,13 @@ export default function Interventions() {
   return (
     <div>
       <div className='flex flex-col'>
-        <div className="flex flex-row w-full justify-center">
-          <Link to='/schedule-appointment'>
-            <button className='bg-purple-600 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12'>Prendre Rendez-vous</button>
-          </Link>
-        </div>
+        {currentUser.role === "user" ? 
+          <div className="flex flex-row w-full justify-center">
+            <Link to='/schedule-appointment'>
+              <button className='bg-purple-600 text-white p-3 rounded-lg uppercase hover:opacity-95 w-60 h-12'>Prendre Rendez-vous</button>
+            </Link>
+          </div>
+        : ""}
 
         {/* Filter Input */}
         <div className="flex justify-center p-5">

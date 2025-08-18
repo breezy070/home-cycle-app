@@ -23,25 +23,25 @@ export default function GestionInterventions() {
     fetchInterventions();
   }, []);
 
-    const handleDeleteIntervention = async (interventionId) => {
-        try {
-        // dispatch(deleteUserStart());
-        const res = await fetch(`api/admin/delete-intervention/${interventionId}`, {
-            method: 'DELETE',
-        });
-        const data = await res.json();
-        if (data.success === false) {
-            // dispatch(deleteUserFailure(data));
-            return;
-        }
-        const updatedInterventions = await axios.get('/api/admin/get-interventions');
-        setInterventions(updatedInterventions.data.interventions);
-        // dispatch(deleteUserSuccess(data));
-        } catch (error) {
-        // dispatch(deleteUserFailure(error))
-        }
-        console.log("deleting intervention : " + interventionId)
-    }
+  const handleDeleteIntervention = async (interventionId) => {
+      try {
+      // dispatch(deleteUserStart());
+      const res = await fetch(`api/admin/delete-intervention/${interventionId}`, {
+          method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success === false) {
+          // dispatch(deleteUserFailure(data));
+          return;
+      }
+      const updatedInterventions = await axios.get('/api/admin/get-interventions');
+      setInterventions(updatedInterventions.data.interventions);
+      // dispatch(deleteUserSuccess(data));
+      } catch (error) {
+      // dispatch(deleteUserFailure(error))
+      }
+      console.log("deleting intervention : " + interventionId)
+  }
 
   return (
     <div>

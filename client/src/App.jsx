@@ -1,3 +1,8 @@
+import { useEffect } from 'react';
+import {jwtDecode} from 'jwt-decode';
+import { useDispatch } from 'react-redux';
+import { logoutSuccess } from './redux/user/userSlice'; // update the path if needed
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from './pages/HomePage';
 import About from './pages/About';
@@ -18,6 +23,45 @@ import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
 
 export default function App() {
+
+  const dispatch = useDispatch();
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  useEffect(() => {
+    // const token = localStorage.getItem('access_token');
+
+    //grab cookie from cookies (inside application(devconsole))
+    const token = getCookie('access_token'); // ✅
+    console.log(token);
+    if (!token) return;
+
+    try {
+      const decoded = jwtDecode(token); // decode the JWT payload
+      const now = Date.now() / 1000; // current time in seconds
+
+      if (decoded.exp < now) {
+        // Token has expired
+        console.log('🔒 JWT expired. Logging out...');
+        dispatch(logoutSuccess()); // clears Redux state
+        localStorage.removeItem('access_token');
+        window.location.href = '/sign-in'; // redirect to login page
+      }
+    } catch (err) {
+      // Token is invalid or corrupted
+      console.error('Invalid JWT:', err);
+      dispatch(logoutSuccess());
+      localStorage.removeItem('access_token');
+      window.location.href = '/sign-in';
+    }
+  }, []);
+
+
+
   return (
     // <BrowserRouter>
     //   <Header />
