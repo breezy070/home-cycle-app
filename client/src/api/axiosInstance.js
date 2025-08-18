@@ -6,6 +6,8 @@ const baseURL =
     ? '/api'
     : import.meta.env.VITE_API_BASE;
 
+console.log('[axios baseURL]', baseURL);
+
 const api = axios.create({
   baseURL,
   withCredentials: true,
