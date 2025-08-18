@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import Technician from "../models/technicianModel.js";
 import Intervention from "../models/interventionModel.js";
+import Facture from '../models/factureModel.js'; // adjust if needed
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 
@@ -92,6 +93,7 @@ export const scheduleAppointment = async (req, res, next ) => {
             { new: true } // Return the updated technician
         );
 
+
         if (!technician) {
             return res.status(404).json({ message: 'No technician available in your zone' });
         }
@@ -139,47 +141,60 @@ export const getAppointments = async (req, res, next ) => {
   }
 }
 
-export const cancelAppointment = async (req, res, next ) => {
-    // if (req.user.id !== req.params.id) {
-    //     return next(errorHandler(401, 'You can only delete your appointments'));
-    // }
+// export const updateAppointmentStatus = async (req, res, next ) => {
+//     // if (req.user.id !== req.params.id) {
+//     //     return next(errorHandler(401, 'You can only delete your appointments'));
+//     // }
 
-    // try {
-    //     await Intervention.findByIdAndUpdate(req.params.id);
-    //     res.status(200).json('Appointent has been cancelled !');
-    // } catch (error) {
-    //     next(error);
-    // }
+//     // try {
+//     //     await Intervention.findByIdAndUpdate(req.params.id);
+//     //     res.status(200).json('Appointent has been cancelled !');
+//     // } catch (error) {
+//     //     next(error);
+//     // }
 
-    // if (req.technician.id !== req.params.id) {
-    //     return next(errorHandler(401, 'You can only update YOUR account !'));
-    // }
+//     // if (req.technician.id !== req.params.id) {
+//     //     return next(errorHandler(401, 'You can only update YOUR account !'));
+//     // }
 
-    // try {
-    //     if (req.body.password) {
-    //         req.body.password = bcryptjs.hashSync(req.body.password, 10)
-    //     }
+//     // try {
+//     //     if (req.body.password) {
+//     //         req.body.password = bcryptjs.hashSync(req.body.password, 10)
+//     //     }
 
-    const { appointmentId } = req.params;
-    const { status } = req.body;
+//     const { appointmentId } = req.params;
+//     const { status } = req.body;
   
-    try {
-      const updatedAppointment = await Intervention.findByIdAndUpdate(
-        appointmentId,
-        { status },
-        { new: true }
-      );
+//     try {
+//       const updatedAppointment = await Intervention.findByIdAndUpdate(
+//         appointmentId,
+//         { status },
+//         { new: true }
+//       );
   
-      if (!updatedAppointment) {
-        return res.status(404).json({ success: false, message: 'Appointment not found' });
-      }
+//       if (!updatedAppointment) {
+//         return res.status(404).json({ success: false, message: 'Appointment not found' });
+//       }
+
+//     // ✅ Create receipt if accepted
+//     if (status === 'Accepted') {
+//     await Receipt.create({
+//         appointmentId: updatedAppointment._id,
+//         userId: updatedAppointment.userId,
+//         technicianId: updatedAppointment.technicianId,
+//         services: updatedAppointment.services,
+//         price: 40, // or derive from services
+//         date: updatedAppointment.date,
+//         createdAt: new Date()
+//     });
+//     }
   
-      res.status(200).json({ success: true, data: updatedAppointment });
-    } catch (error) {
-      console.error('Error updating appointment:', error);
-      res.status(500).json({ success: false, message: 'Server error' });
-    }
-  }
+//       res.status(200).json({ success: true, data: updatedAppointment });
+//     } catch (error) {
+//       console.error('Error updating appointment:', error);
+//       res.status(500).json({ success: false, message: 'Server error' });
+//     }
+// }
 
         // const updatedTechnician = await Technician.findByIdAndUpdate(
         //     req.params.id,
@@ -201,4 +216,45 @@ export const cancelAppointment = async (req, res, next ) => {
 //         next(error)
 //     }
 // }
+
+export const updateAppointmentStatus = async (req, res) => {
+  const { appointmentId } = req.params;
+  const { status } = req.body;
+
+  try {
+    const updatedAppointment = await Intervention.findByIdAndUpdate(
+      appointmentId,
+      { status },
+      { new: true }
+    ).populate('technicianId', 'first_name last_name profilePicture').populate('userId', 'first_name last_name profilePicture'); // populate for facture
+
+    if (!updatedAppointment) {
+      return res.status(200).json({ message: 'Appointment not found' });
+    }
+
+    // ✅ Create facture when appointment is accepted by the technician
+    if (status === 'Accepted') {
+      const technician = updatedAppointment.technicianId;
+      const user = updatedAppointment.userId;
+
+      await Facture.create({
+        userId : user._id,
+        technicianId : technician._id,
+        technicianName: `${technician.first_name} ${technician.last_name}`,
+        userName: `${user.first_name} ${user.last_name}`,
+        date: updatedAppointment.date,
+        description: `Services: ${updatedAppointment.services.join(', ')}`,
+        status: status, //fix this, i think in the model is set as a number
+        technicianImage: technician.profilePicture || "src/assets/technician1.jpg"
+      });
+    }
+
+    res.status(200).json({ message: 'Appointment updated', appointment: updatedAppointment });
+
+  } catch (error) {
+    console.error('Error updating appointment status:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 

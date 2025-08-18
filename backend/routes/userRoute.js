@@ -1,5 +1,5 @@
 import express from 'express';
-import { test, updateUser, deleteUser, scheduleAppointment, getAppointments, cancelAppointment } from '../controllers/userController.js';
+import { test, updateUser, deleteUser, scheduleAppointment, getAppointments, updateAppointmentStatus } from '../controllers/userController.js';
 import { verifyToken } from '../utils/verifyUser.js';
 
 const router = express.Router();
@@ -10,6 +10,6 @@ router.delete('/delete/:id', verifyToken, deleteUser);
 
 router.post('/schedule-appointment', verifyToken, scheduleAppointment)
 router.get('/scheduled-appointments/:userId', verifyToken, getAppointments)
-router.put('/scheduled-appointments/update/:appointmentId', verifyToken, cancelAppointment)
+router.put('/scheduled-appointments/update/:appointmentId', verifyToken, updateAppointmentStatus)
 
 export default router;

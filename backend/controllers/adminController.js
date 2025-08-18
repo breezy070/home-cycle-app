@@ -40,6 +40,7 @@ export const getAllClients = async (req, res, next) => {
   }
 }
 
+//this was replaced by the code below
 // export const addUsers = async (req,res,next) => {
 //   const { role, first_name, last_name, email, address, password } = req.body;
 
@@ -99,9 +100,6 @@ export const getAllClients = async (req, res, next) => {
 //     res.status(500).json({ success: false, message: 'Server error.' });
 //   }
 // }
-
-
-
 
 export const addUsers = async (req, res, next) => {
   const { role, first_name, last_name, email, address, password } = req.body;
@@ -240,8 +238,6 @@ export const getClientById = async (req, res, next) => {
   }
 }
 
-
-
 export const getTechnicianZone = async (req, res, next ) => {
     try {
         const technician = await Technician.findById(req.params.technicianId);
@@ -278,7 +274,7 @@ export const assignTechnicianZone = async (req, res, next ) => {
     const { technicianId, coordinates } = req.body; // Extract data from the request
     console.log("coord: " + coordinates)
 
-    // Ensure the first and last points are the same : mongodB requires that the loop closes (1 position should be the same as the last)
+    // Ensure the first and last points are the same : mongodB requires that the loop closes (position 1 should be the same as the last)
     const firstPoint = coordinates[0][0];
     const lastPoint = coordinates[0][coordinates[0].length - 1];
 

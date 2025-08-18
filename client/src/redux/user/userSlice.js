@@ -22,6 +22,12 @@ const userSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        logoutSuccess: (state) => {
+            state.currentUser = null;
+            state.loading = false;
+            state.error = false;
+            localStorage.removeItem('access_token'); // 🔐 remove JWT on logout
+        },
         updateUserStart: (state) => {
             state.loading = true;
 
@@ -61,6 +67,7 @@ export const {
     signInStart,
     signInSuccess,
     signInFailure,
+    logoutSuccess,
     updateUserStart,
     updateUserSuccess,
     updateUserFailure,
