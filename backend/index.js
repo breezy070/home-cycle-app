@@ -24,21 +24,20 @@ const app = express();
 app.set('trust proxy', 1);
 
 //CORS
-// app.use(cors({
-//   origin: ['https://homecyclehome.netlify.app', 'http://localhost:5173'],
-//   credentials: true
-// }));
-
-
-// FOR TESTING
-// Permissive CORS for testing
 app.use(cors({
-  origin: (origin, cb) => cb(null, true), // reflect any origin
-  credentials: true,
+  origin: true,
+  credentials: true
 }));
-// Also handle preflight explicitly (optional but nice)
-app.options('*', cors());
-//FOR TESTING
+
+
+
+// // FOR TESTING
+// // Permissive CORS for testing
+//   app.use(cors({ origin: true, credentials: true }));
+//   app.options('*', cors());
+// // Also handle preflight explicitly (optional but nice)
+// app.options('*', cors());
+// //FOR TESTING
 
 
 //allowing sending request json to the backend
