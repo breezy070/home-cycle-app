@@ -36,8 +36,8 @@ export default function App() {
     // const token = localStorage.getItem('access_token');
 
     //grab cookie from cookies (inside application(devconsole))
-    const token = getCookie('access_token'); // ✅
-    console.log(token);
+    const token = getCookie('access_token');
+    console.log("cookie token: " + token);
     if (!token) return;
 
     try {

@@ -25,7 +25,7 @@ app.set('trust proxy', 1);
 
 //CORS
 app.use(cors({
-  origin: ['https://homecyclehome.netlify.app', 'http://localhost:5173/'],
+  origin: ['https://homecyclehome.netlify.app', 'http://localhost:5173'],
   credentials: true
 }));
 
