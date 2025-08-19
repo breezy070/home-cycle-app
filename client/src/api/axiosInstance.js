@@ -2,10 +2,10 @@ import axios from 'axios';
 
 // Base URL: dev proxy vs prod env var
 // use baseURL = "" for localhost testing
-const baseURL = 
-  import.meta.env.MODE === 'development'
-    ? '/api'
-    : import.meta.env.VITE_API_BASE;
+const baseURL = ""
+  // import.meta.env.MODE === 'development'
+  //   ? '/api'
+  //   : import.meta.env.VITE_API_BASE;
 
 console.log('[axios baseURL]', baseURL);
 
