@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from "react"
 import { useDispatch } from "react-redux";
 import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOut } from "../redux/user/userSlice";
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from '@/api/axiosInstance';
+import api from '@/api/axiosInstance';
 
 export default function Profile() {
   const fileRef = useRef(null);
@@ -18,7 +18,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`/api/admin/get-client-by-id/${userId}`);
+        const response = await api.get(`/admin/get-client-by-id/${userId}`);
         setUser(response.data.client);
         console.log(response.data.client)
       } catch (error) {
