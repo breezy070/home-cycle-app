@@ -9,9 +9,16 @@ const baseURL = ""
 
 console.log('[axios baseURL]', baseURL);
 
-const api = axios.create({
-  baseURL,
-  withCredentials: true,
+// const api = axios.create({
+//   baseURL,
+//   withCredentials: true,
+//   headers: { 'Content-Type': 'application/json' },
+//   timeout: 15000,
+// });
+
+export const api = axios.create({
+  baseURL: '/api',                // always proxy through Netlify
+  withCredentials: true,          // so cookies ride along
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
 });

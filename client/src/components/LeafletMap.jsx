@@ -164,7 +164,7 @@ export default function LeafletMap({ polygon, onPolygonChange, selectedTechnicia
       console.log("Saving coordinates: ", coordinates);
   
       // Save the zone
-      await api.post('/api/admin/technician-assign-zone', {
+      await api.post('/admin/technician-assign-zone', {
         technicianId: selectedTechnician,
         coordinates, // Already structured as GeoJSON (array of arrays)
       });

@@ -32,7 +32,7 @@ export default function InterventionScheduler() {
       });
 
       try {
-        const response = await api.post('/api/user/schedule-appointment', {
+        const response = await api.post('/user/schedule-appointment', {
           userId: currentUser._id,
           date,
           services,

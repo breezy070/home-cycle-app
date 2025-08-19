@@ -8,7 +8,7 @@ const TechnicianWeeklySchedule = ({ technicianId, onTimeSlotSelect }) => {
   const fetchAvailability = async () => {
     try {
       const start = weekStart.toISOString().split('T')[0];
-      const response = await api.get(`/api/technicians/${technicianId}/availability`, {
+      const response = await api.get(`/technicians/${technicianId}/availability`, {
         params: { weekStart: start },
       });
       setAvailability(response.data);

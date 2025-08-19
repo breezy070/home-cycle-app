@@ -136,7 +136,7 @@ export const signinAdmin = async (req, res, next) => {
         const expiryDate = new Date(Date.now() + 3600000); //1 hour
 
         // res.cookie('access_token', token, {httpOnly: true, expires: expiryDate, sameSite: 'none', secure: process.env.NODE_ENV === 'production'}).status(200).json(rest);
-        res.cookie('access_token', token, {httpOnly: true, expires: expiryDate, sameSite: 'none', secure: process.env.NODE_ENV === 'production'});
+        res.cookie('access_token', token, {httpOnly: true, expires: expiryDate, sameSite: 'lax', secure: process.env.NODE_ENV === 'production'});
         // .status(200).json(rest);
         return res.status(200).json({ ...rest, token });
     } catch (error) {
@@ -162,7 +162,7 @@ export const signin = async (req, res, next) => {
         const {password: hashedPassword, ...rest} = validUser._doc;
         const expiryDate = new Date(Date.now() + 3600000); //1 hour
 
-        res.cookie('access_token', token, {httpOnly: true, expires: expiryDate, sameSite: 'none', secure: process.env.NODE_ENV === 'production'});
+        res.cookie('access_token', token, {httpOnly: true, expires: expiryDate, sameSite: 'lax', secure: process.env.NODE_ENV === 'production'});
         // .status(200).json(rest);
         return res.status(200).json({ ...rest, token });
     } catch (error) {
@@ -188,7 +188,7 @@ export const signinTechnician = async (req, res, next) => {
         const {password: hashedPassword, ...rest} = validTechnician._doc;
         const expiryDate = new Date(Date.now() + 3600000); //1 hour
 
-        res.cookie('access_token', token, {httpOnly: true, expires: expiryDate, sameSite: 'none', secure: process.env.NODE_ENV === 'production'}).status(200).json(rest);
+        res.cookie('access_token', token, {httpOnly: true, expires: expiryDate, sameSite: 'lax', secure: process.env.NODE_ENV === 'production'}).status(200).json(rest);
     } catch (error) {
         next(error);
     }
