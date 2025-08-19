@@ -21,7 +21,7 @@ export default function Interventions() {
       if (currentUser.role === 'user') {
         console.log("displaying user appointments")
         try {
-          const response = await api.get(`/api/user/scheduled-appointments/${currentUser._id}`);
+          const response = await api.get(`/user/scheduled-appointments/${currentUser._id}`);
           console.log(response.data);
           setAppointments(response.data.appointments);
           setFilteredAppointments(response.data.appointments);
