@@ -24,11 +24,15 @@ const app = express();
 app.set('trust proxy', 1);
 
 //CORS
+// app.use(cors({
+//   origin: ['https://homecyclehome.netlify.app', 'http://localhost:5173'],
+//   credentials: true
+// }));
+
 app.use(cors({
   origin: true,
   credentials: true
 }));
-
 
 
 // // FOR TESTING
