@@ -1,0 +1,32 @@
+# render.yaml (Variant B)
+services:
+  - type: private_service
+    name: mongo
+    env: docker
+    image: mongo:7
+    disk:
+      name: mongo-data
+      mountPath: /data/db
+      sizeGB: 5
+    envVars:
+      - key: MONGO_INITDB_ROOT_USERNAME
+        value: root
+      - key: MONGO_INITDB_ROOT_PASSWORD
+        value: 123456
+
+  - type: web
+    name: homecyclehome-api
+    env: docker
+    plan: free
+    branch: main
+    rootDir: backend
+    dockerfilePath: backend/Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: MONGO_URI
+        value: "mongodb://root:123456@mongo:27017/admin?authSource=admin"
