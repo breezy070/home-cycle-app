@@ -22,7 +22,7 @@ services:
   - type: web
     runtime: docker
     name: homecyclehome-api
-    branch: main
+    branch: feat/render-docker
     dockerfilePath: backend/Dockerfile
     dockerContext: backend
     healthCheckPath: /health
