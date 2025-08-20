@@ -1,17 +1,16 @@
 [build]
-  base = "client"
+  base    = "client"
   command = "npm run build"
-  publish = "dist"
+  publish = "dist"   # correct since base=client
 
-# Proxy API calls → Render backend
 [[redirects]]
   from = "/api/*"
-  to = "https://homecyclehome-api-docker.onrender.com/:splat"
+  to   = "https://homecyclehome-api-docker.onrender.com/api/:splat"
   status = 200
   force = true
 
-# React Router fallback (prevents 404 on refresh)
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to   = "/index.html"
   status = 200
+
