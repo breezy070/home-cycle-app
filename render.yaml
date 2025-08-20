@@ -1,9 +1,13 @@
-# render.yaml (Variant B)
+# render.yaml
+
 services:
-  - type: private_service
+  # 1) Private Mongo (Docker image + persistent disk)
+  - type: pserv                # <— private service
+    runtime: image             # pull a prebuilt image
     name: mongo
-    env: docker
-    image: mongo:7
+    image:
+      url: docker.io/library/mongo:7
+    plan: starter              # free is NOT allowed for private services
     disk:
       name: mongo-data
       mountPath: /data/db
@@ -12,21 +16,23 @@ services:
       - key: MONGO_INITDB_ROOT_USERNAME
         value: root
       - key: MONGO_INITDB_ROOT_PASSWORD
-        sync: false
+        sync: false            # set in Render dashboard at creation time
 
+  # 2) API (build from your backend Dockerfile)
   - type: web
+    runtime: docker
     name: homecyclehome-api
-    env: docker
-    plan: free
     branch: main
-    rootDir: backend
     dockerfilePath: backend/Dockerfile
+    dockerContext: backend
     healthCheckPath: /health
-    autoDeploy: true
+    autoDeployTrigger: commit
+    plan: starter              # you can keep this on free if desired, but starter is fine too
     envVars:
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
         sync: false
+      # EITHER enter full URI in dashboard (simplest):
       - key: MONGO_URI
         sync: false
