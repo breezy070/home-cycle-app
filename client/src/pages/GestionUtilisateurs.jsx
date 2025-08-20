@@ -148,7 +148,7 @@ export default function GestionUtilisateurs() {
 
                         <p className={`w-fit p-1 font-bold  uppercase text-yellow-600`}>Email: {user.email}</p>
                         {user.role === 'user' ? 
-                        <p className={`w-fit p-1 font-bold  uppercase text-green-600`}>Address: {user.role === 'user' ? user.address.addressString : ''}</p>
+                        <p className={`w-fit p-1 font-bold  uppercase text-green-600`}>Address: {user.role === 'user' ? (user.address?.addressString ?? '—') : ''}</p>
                         : ''
                         }
                         <p className={`w-fit p-1 font-bold  uppercase text-red-600`}>Role: {user.role}</p>
