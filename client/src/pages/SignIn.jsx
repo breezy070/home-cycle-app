@@ -25,7 +25,7 @@ export default function SignIn() {
 
     try {
       dispatch(signInStart());
-      const endpoint = `/api/auth/signin${role === 'admin' || role ==='technician' ? role : ''}`; // Dynamic endpoint based on role
+      const endpoint = `/api/auth/signin/${role === 'admin' || role ==='technician' ? role : ''}`; // Dynamic endpoint based on role
       console.log('url endpoint: '+endpoint)
       const res = await fetch(endpoint, {
         method: "POST",
