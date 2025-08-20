@@ -10,6 +10,8 @@ import interventionRoutes from './routes/interventionRoute.js'
 import factureRoutes from './routes/factureRoute.js'
 import cookieParser from 'cookie-parser';
 import logRequestMiddleware from './utils/logRequestMiddleware.js';
+import healthRoutes from "./routes/healthRoute.js";
+
 
 dotenv.config();
 
@@ -59,6 +61,9 @@ app.listen(PORT, () => {
 });
 
 app.use(logRequestMiddleware);
+
+
+app.use("/health", healthRoutes);
 
 
 
