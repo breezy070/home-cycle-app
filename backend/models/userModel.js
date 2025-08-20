@@ -1,48 +1,29 @@
+// models/userModel.js
 import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema(
-    {
-        first_name: {
-            type: String,
-        
-            required: [true, "First name is required !"]
-        },
-        last_name: {
-            type: String,
-      
-            required: [true, "Last name is required !"]
-        },
-        email: {
-            type: String,
-            unique: true,
-            required: [true, "E-mail is required !"]
-        },
-        address: {
-            type: { type: String, enum: ['Point'], required: true, default: 'Point' },
-            coordinates: { type: [Number], required: true }, // [longitude, latitude]
-            addressString: {type: String, required: [true, "Address is required !"]}
-        },
-        password: {
-            type: String,
-            required: [true, "Password is required !"]
-        },
-        role: {
-            type: String,
-            default: "user"
-            // required: [true, "Role is required !"]
-        },
-        profilePicture: {
-            type: String,
-            default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-        }
-    },
-    {
-        timestamps: true
-    }
+const AddressSchema = new mongoose.Schema({
+  type: { type: String, enum: ["Point"], default: "Point" },
+  coordinates: { type: [Number], default: undefined }, // ← not required
+  addressString: { type: String, required: [true, "Address is required !"] },
+}, { _id: false });
 
-);
-userSchema.index({ address: '2dsphere' }); // Geospatial index
-//this creates the collection on the mongoDB, the name of the database was created on the .env file by specifying it.
-const User = mongoose.model("User", userSchema);
+// Index the coordinates array; docs without coordinates are fine
+AddressSchema.index({ coordinates: "2dsphere" });
 
-export default User;
+const userSchema = new mongoose.Schema({
+  first_name: { type: String, required: [true, "First name is required !"] },
+  last_name:  { type: String, required: [true, "Last name is required !"] },
+  email:      { type: String, unique: true, required: [true, "E-mail is required !"] },
+  address:    { type: AddressSchema, default: undefined },
+  password:   { type: String, required: [true, "Password is required !"] },
+  role:       { type: String, default: "user" },
+  profilePicture: {
+    type: String,
+    default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+  }
+}, { timestamps: true });
+
+// If you kept userSchema.index({ address: '2dsphere' }); remove it or change to coordinates:
+userSchema.index({ "address.coordinates": '2dsphere' });
+
+export default mongoose.model("User", userSchema);

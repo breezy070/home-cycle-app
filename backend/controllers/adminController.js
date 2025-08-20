@@ -101,89 +101,177 @@ export const getAllClients = async (req, res, next) => {
 //   }
 // }
 
-export const addUsers = async (req, res, next) => {
+// export const addUsers = async (req, res, next) => {
+//   const { role, first_name, last_name, email, address, password } = req.body;
+
+//   try {
+//     // Validate required fields
+//     if (!role || !first_name || !last_name || !email || !password || !address) {
+//       return res.status(400).json({ success: false, message: 'All fields are required.' });
+//     }
+
+//     // Check if the user already exists
+//     const existingUser =
+//       (await User.findOne({ email })) ||
+//       (await Technician.findOne({ email })) ||
+//       (await Admin.findOne({ email }));
+
+//     if (existingUser) {
+//       return res.status(400).json({ success: false, message: 'Email already in use.' });
+//     }
+
+//     // Select the model dynamically
+//     let Model;
+//     switch (role.toLowerCase()) {
+//       case 'user':
+//         Model = User;
+//         break;
+//       case 'technician':
+//         Model = Technician;
+//         break;
+//       case 'admin':
+//         Model = Admin;
+//         break;
+//       default:
+//         return res.status(400).json({ success: false, message: 'Invalid role.' });
+//     }
+
+//     // Hash the password
+//     const hashedPassword = await bcryptjs.hash(password, 10);
+
+//     // Geocode the address
+//     const geocodeAddress = async (address) => {
+//       const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`;
+
+//       try {
+//         const response = await axios.get(url);
+//         const results = response.data;
+//         if (results.length > 0) {
+//           const { lat, lon } = results[0];
+//           return [parseFloat(lon), parseFloat(lat)];
+//         } else {
+//           console.log('Geocoding failed: No results found.');
+//           return [null, null];
+//         }
+//       } catch (error) {
+//         console.log(`Geocoding error: ${error.message}`);
+//         return [null, null];
+//       }
+//     };
+
+//     const [longitude, latitude] = await geocodeAddress(address);
+
+//     // Create user with structured address
+//     const newUser = new Model({
+//       first_name,
+//       last_name,
+//       email,
+//       password: hashedPassword,
+//       address: {
+//         type: 'Point',
+//         addressString: address,
+//         coordinates: [longitude, latitude],
+//       },
+//     });
+
+//     await newUser.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: `${role} created successfully.`,
+//       user: newUser,
+//     });
+//   } catch (error) {
+//     console.error('Error adding user:', error);
+//     res.status(500).json({ success: false, message: 'Server error.' });
+//   }
+// };
+
+export const addUsers = async (req, res) => {
   const { role, first_name, last_name, email, address, password } = req.body;
 
   try {
-    // Validate required fields
+    // 1) Validate input
     if (!role || !first_name || !last_name || !email || !password || !address) {
-      return res.status(400).json({ success: false, message: 'All fields are required.' });
+      return res.status(400).json({ success: false, message: "All fields are required." });
     }
 
-    // Check if the user already exists
-    const existingUser =
+    // 2) Uniqueness across all roles
+    const existing =
       (await User.findOne({ email })) ||
       (await Technician.findOne({ email })) ||
       (await Admin.findOne({ email }));
-
-    if (existingUser) {
-      return res.status(400).json({ success: false, message: 'Email already in use.' });
+    if (existing) {
+      return res.status(409).json({ success: false, message: "Email already in use." });
     }
 
-    // Select the model dynamically
+    // 3) Select model
     let Model;
-    switch (role.toLowerCase()) {
-      case 'user':
-        Model = User;
-        break;
-      case 'technician':
-        Model = Technician;
-        break;
-      case 'admin':
-        Model = Admin;
-        break;
-      default:
-        return res.status(400).json({ success: false, message: 'Invalid role.' });
+    switch ((role || "").toLowerCase()) {
+      case "user": Model = User; break;
+      case "technician": Model = Technician; break;
+      case "admin": Model = Admin; break;
+      default: return res.status(400).json({ success: false, message: "Invalid role." });
     }
 
-    // Hash the password
+    // 4) Hash password
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    // Geocode the address
-    const geocodeAddress = async (address) => {
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`;
-
+    // 5) Geocode (Nominatim-compliant + robust)
+    async function geocodeAddress(addressString) {
       try {
-        const response = await axios.get(url);
-        const results = response.data;
-        if (results.length > 0) {
-          const { lat, lon } = results[0];
-          return [parseFloat(lon), parseFloat(lat)];
-        } else {
-          console.log('Geocoding failed: No results found.');
-          return [null, null];
-        }
-      } catch (error) {
-        console.log(`Geocoding error: ${error.message}`);
-        return [null, null];
+        const url = "https://nominatim.openstreetmap.org/search";
+        const resp = await axios.get(url, {
+          params: { q: addressString, format: "json", addressdetails: 1, limit: 1, email: process.env.NOMINATIM_EMAIL },
+          headers: { "User-Agent": process.env.NOMINATIM_USER_AGENT || "HomeCycleHome/1.0 (contact: fabrizio.dimarco@gmail.com)" },
+          timeout: 8000,
+          validateStatus: s => s >= 200 && s < 500,
+        });
+        if (!Array.isArray(resp.data) || resp.data.length === 0) return null;
+        const { lat, lon } = resp.data[0] || {};
+        const latNum = Number(lat), lonNum = Number(lon);
+        if (!Number.isFinite(latNum) || !Number.isFinite(lonNum)) return null;
+        return { lat: latNum, lng: lonNum }; // NOTE: lng = lon
+      } catch (e) {
+        console.warn("Geocoding error:", e?.message || e);
+        return null;
       }
-    };
+    }
 
-    const [longitude, latitude] = await geocodeAddress(address);
+    const geo = await geocodeAddress(address);
 
-    // Create user with structured address
-    const newUser = new Model({
+    // 6) Build address doc (only include coordinates if valid)
+    let addressDoc = { addressString: address };
+    if (geo) {
+      addressDoc = { type: "Point", coordinates: [geo.lng, geo.lat], addressString: address }; // [lng, lat]
+    } else {
+      // OPTIONAL: enforce geocode for users
+      // if ((role || "").toLowerCase() === "user") {
+      //   return res.status(400).json({ success:false, message:"Address could not be geocoded" });
+      // }
+      // else: degrade gracefully (store only string, no coordinates)
+    }
+
+    // 7) Create
+    const newUser = await Model.create({
       first_name,
       last_name,
-      email,
+      email: email.toLowerCase().trim(),
       password: hashedPassword,
-      address: {
-        type: 'Point',
-        addressString: address,
-        coordinates: [longitude, latitude],
-      },
+      address: addressDoc, // coordinates omitted if geocode failed
+      role,
     });
 
-    await newUser.save();
-
-    res.status(201).json({
-      success: true,
-      message: `${role} created successfully.`,
-      user: newUser,
-    });
-  } catch (error) {
-    console.error('Error adding user:', error);
-    res.status(500).json({ success: false, message: 'Server error.' });
+    return res.status(201).json({ success: true, message: `${role} created successfully.`, user: newUser });
+  } catch (err) {
+    if (err?.code === 11000) {
+      return res.status(409).json({ success: false, message: "Email already exists." });
+    }
+    if (err?.name === "ValidationError") {
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    console.error("Error adding user:", err);
+    return res.status(500).json({ success: false, message: "Server error." });
   }
 };
 
