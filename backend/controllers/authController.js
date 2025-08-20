@@ -28,63 +28,123 @@ export const test = (req, res) => {
 
 // }
 
+// export const signup = async (req, res, next) => {
+//     const { first_name, last_name, email, address, password } = req.body;
+
+//     // Hash the password
+//     const hashedPassword = bcryptjs.hashSync(password, 10);
+
+//     try {
+//         // Geocode the address using OpenStreetMap's Nominatim API with Axios
+//         const geocodeAddress = async (address) => {
+//             const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`;
+
+//             //diff type of search, might be more precise but user should only enter street name
+//             // const url2 = `https://nominatim.openstreetmap.org/search?street=8%20avenue%20des%20vall%C3%A9es&city=Pau&country=France&postalcode=64000&format=json&limit=1`
+
+//             try {
+//                 // Make the GET request using Axios
+//                 const response = await axios.get(url);
+//                 const results = response.data;
+
+//                 if (results.length > 0) {
+//                     const { lat, lon } = results[0];
+//                     return [parseFloat(lon), parseFloat(lat)]; // Return coordinates as [lng, lat]
+//                 } else {
+//                     // throw new Error('Geocoding failed: No results found.');
+//                     console.log('Geocoding failed: No results found.')
+//                 }
+//             } catch (error) {
+//                 // throw new Error(`Geocoding failed: ${error.message}`);
+//                 console.log(`Geocoding failed: ${error.message}`)
+//             }
+//         };
+
+//         // Perform geocoding to get the longitude and latitude
+//         const [longitude, latitude] = await geocodeAddress(address);
+
+//         // Create a new user with GeoJSON address format
+//         const newUser = new User({
+//             first_name,
+//             last_name,
+//             email,
+//             password: hashedPassword,
+//             address: {
+//                 type: 'Point',
+//                 addressString: address,
+//                 coordinates: [longitude, latitude], // GeoJSON format
+//             },
+//         });
+
+//         // Save the new user to the database
+//         await newUser.save();
+
+//         // Respond with a success message
+//         res.status(201).json({ message: 'User created!' });
+//     } catch (error) {
+//         console.error('Error during signup:', error.message);
+//         next(error); // Pass the error to the error handler
+//     }
+// };
+
 export const signup = async (req, res, next) => {
+  try {
     const { first_name, last_name, email, address, password } = req.body;
 
-    // Hash the password
+    if (!first_name || !last_name || !email || !password || !address) {
+      return res.status(400).json({ success: false, message: "All fields are required." });
+    }
+
+    // hash
     const hashedPassword = bcryptjs.hashSync(password, 10);
 
-    try {
-        // Geocode the address using OpenStreetMap's Nominatim API with Axios
-        const geocodeAddress = async (address) => {
-            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`;
-
-            //diff type of search, might be more precise but user should only enter street name
-            // const url2 = `https://nominatim.openstreetmap.org/search?street=8%20avenue%20des%20vall%C3%A9es&city=Pau&country=France&postalcode=64000&format=json&limit=1`
-
-            try {
-                // Make the GET request using Axios
-                const response = await axios.get(url);
-                const results = response.data;
-
-                if (results.length > 0) {
-                    const { lat, lon } = results[0];
-                    return [parseFloat(lon), parseFloat(lat)]; // Return coordinates as [lng, lat]
-                } else {
-                    // throw new Error('Geocoding failed: No results found.');
-                    console.log('Geocoding failed: No results found.')
-                }
-            } catch (error) {
-                // throw new Error(`Geocoding failed: ${error.message}`);
-                console.log(`Geocoding failed: ${error.message}`)
-            }
-        };
-
-        // Perform geocoding to get the longitude and latitude
-        const [longitude, latitude] = await geocodeAddress(address);
-
-        // Create a new user with GeoJSON address format
-        const newUser = new User({
-            first_name,
-            last_name,
-            email,
-            password: hashedPassword,
-            address: {
-                type: 'Point',
-                addressString: address,
-                coordinates: [longitude, latitude], // GeoJSON format
-            },
+    // Nominatim-compliant geocoder
+    async function geocodeAddress(addressString) {
+      try {
+        const resp = await axios.get("https://nominatim.openstreetmap.org/search", {
+          params: { q: addressString, format: "json", addressdetails: 1, limit: 1, email: process.env.NOMINATIM_EMAIL },
+          headers: { "User-Agent": process.env.NOMINATIM_USER_AGENT || "HomeCycleHome/1.0 (fabrizio.dimarco@gmail.com)" },
+          timeout: 8000,
+          validateStatus: s => s >= 200 && s < 500,
         });
-
-        // Save the new user to the database
-        await newUser.save();
-
-        // Respond with a success message
-        res.status(201).json({ message: 'User created!' });
-    } catch (error) {
-        console.error('Error during signup:', error.message);
-        next(error); // Pass the error to the error handler
+        if (!Array.isArray(resp.data) || resp.data.length === 0) return null;
+        const { lat, lon } = resp.data[0] || {};
+        const latNum = Number(lat), lonNum = Number(lon);
+        if (!Number.isFinite(latNum) || !Number.isFinite(lonNum)) return null;
+        return { lat: latNum, lng: lonNum }; // GeoJSON uses [lng, lat]
+      } catch (e) {
+        console.warn("Geocoding error:", e?.message || e);
+        return null;
+      }
     }
+
+    const geo = await geocodeAddress(address);
+
+    // Build address doc: always keep the string; coords only if valid
+    const addressDoc = geo
+      ? { type: "Point", coordinates: [geo.lng, geo.lat], addressString: address }
+      : { addressString: address };
+
+    const user = await User.create({
+      first_name,
+      last_name,
+      email: email.toLowerCase().trim(),
+      password: hashedPassword,
+      role: "user",
+      address: addressDoc, // no coordinates if geocoding failed
+    });
+
+    return res.status(201).json({ success: true, message: "User created!", user: { id: user._id, email: user.email } });
+  } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ success: false, message: "Email already in use." });
+    }
+    if (error?.name === "ValidationError") {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    console.error("Error during signup:", error);
+    return res.status(500).json({ success: false, message: "Server error." });
+  }
 };
 
 //technician account signup
