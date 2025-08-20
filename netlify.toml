@@ -8,14 +8,14 @@
 # Proxy all real API calls (your API is mounted under /api on the backend)
 [[redirects]]
   from = "/api/*"
-  to   = "https://homecyclehome-api-docker.onrender.com/api/:splat"
+  to   = "https://homecyclehome-api.onrender.com/api/:splat"
   status = 200
   force = true
 
 # Add a health probe that maps /health -> backend /health (no /api here)
 [[redirects]]
   from = "/health"
-  to   = "https://homecyclehome-api-docker.onrender.com/health"
+  to   = "https://homecyclehome-api.onrender.com/health"
   status = 200
   force = true
 
