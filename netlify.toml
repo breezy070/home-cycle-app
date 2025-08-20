@@ -1,16 +1,26 @@
+# netlify.toml (root)
+
 [build]
   base    = "client"
-  command = "npm run build"
-  publish = "dist"   # correct since base=client
+  command = "npm ci && npm run build"
+  publish = "dist"
 
+# Proxy all real API calls (your API is mounted under /api on the backend)
 [[redirects]]
   from = "/api/*"
   to   = "https://homecyclehome-api-docker.onrender.com/api/:splat"
   status = 200
   force = true
 
+# Add a health probe that maps /health -> backend /health (no /api here)
+[[redirects]]
+  from = "/health"
+  to   = "https://homecyclehome-api-docker.onrender.com/health"
+  status = 200
+  force = true
+
+# SPA fallback last
 [[redirects]]
   from = "/*"
   to   = "/index.html"
   status = 200
-
