@@ -76,7 +76,7 @@ const ProfileDropdown = (props) => {
               :
               ''
             }
-            {currentUser?.role === "user"
+            {/* {currentUser?.role === "user"
               ?
               <Link onClick={handleCloseDropdown} to='/achats' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                 <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
@@ -86,7 +86,7 @@ const ProfileDropdown = (props) => {
               </Link>
               :
               ''
-            }
+            } */}
             {currentUser?.role === "user" || currentUser?.role === "technician"
               ?
               <Link onClick={handleCloseDropdown} to='/interventions' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -145,7 +145,7 @@ const ProfileDropdown = (props) => {
               :
               ''
             }
-            {currentUser?.role === "user"
+            {/* {currentUser?.role === "user"
               ?
             <Link onClick={handleCloseDropdown} to='/velos' className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
               <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
@@ -155,7 +155,7 @@ const ProfileDropdown = (props) => {
             </Link>
               :
               ''
-            }
+            } */}
             <Link onClick={handleSignOut} className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
             <div className="flex flex-row justify-start items-baseline gap-x-2 w-full ">
               <span className="fa-solid fa-right-from-bracket w-5 h-5"></span>
