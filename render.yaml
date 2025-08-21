@@ -18,7 +18,7 @@ services:
       - key: MONGO_INITDB_ROOT_PASSWORD
         sync: false            # set in Render dashboard at creation time
 
-  # 2) API (build from backend Dockerfile)
+  # 2) API (build from your backend Dockerfile)
   - type: web
     runtime: docker
     name: homecyclehome-api
@@ -27,11 +27,12 @@ services:
     dockerContext: backend
     healthCheckPath: /health
     autoDeployTrigger: commit
-    plan: starter            
+    plan: starter              # you can keep this on free if desired, but starter is fine too
     envVars:
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
         sync: false
+      # EITHER enter full URI in dashboard (simplest):
       - key: MONGO_URI
         sync: false

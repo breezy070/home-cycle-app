@@ -4,7 +4,7 @@ const logRequestMiddleware = async (req, res, next) => {
       const date = new Date().toLocaleDateString('en-GB')
     
       //use body.email if you want to ommit the password, or hash and salt before showing it
-      console.log(date, method, url, params, body.email)
+      console.log(date, method, url, params, body)
     
       return next()
     } catch (err) {

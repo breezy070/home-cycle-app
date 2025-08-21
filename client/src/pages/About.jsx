@@ -55,7 +55,7 @@ export default function About() {
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">Why Choose Us?</h2>
           <ul className="list-disc list-inside text-gray-600 space-y-2">
             <li>
-              <span className="font-semibold">Effortless Schedulingxx:</span> Easy-to-use booking process for clients.
+              <span className="font-semibold">Effortless Scheduling:</span> Easy-to-use booking process for clients.
             </li>
             {/* <li>
               <span className="font-semibold">Efficiency for Technicians:</span> Manage appointments and zones effectively.
