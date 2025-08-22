@@ -85,14 +85,18 @@ jobs:
           npm ci
           npm run build
 
+      - name: Install Netlify CLI
+        if: ${{ steps.changes.outputs.client == 'true' }}
+        working-directory: client
+        run: npm i -D netlify-cli
+
       - name: Deploy to Netlify (Production)
         if: ${{ steps.changes.outputs.client == 'true' && env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != '' }}
-        uses: netlify/actions/cli@master
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          with:
-            args: deploy --dir=client/dist --prod --site $NETLIFY_SITE_ID
+        run: npx netlify deploy --dir=client/dist --prod --site "$NETLIFY_SITE_ID"
+
 
 
       # ---- Render deploy hooks (Option A) ----
