@@ -46,7 +46,7 @@ export default function About() {
         <section className="bg-white shadow-md rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">Our Mission</h2>
           <p className="text-gray-600">
-            Our mission is to enhance convenience for bike owners by providing an integrated solution for on-site repairs and parts purchases. We aim to save time, reduce hassle, and improve communication between our clients and technicians.
+            Ourx mission is to enhance convenience for bike owners by providing an integrated solution for on-site repairs and parts purchases. We aim to save time, reduce hassle, and improve communication between our clients and technicians.
           </p>
         </section>
 
