@@ -46,13 +46,14 @@ jobs:
     needs: [test-frontend, test-backend]
     if: github.ref == 'refs/heads/main' && success()
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     concurrency:
       group: deploy-${{ github.ref }}
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
 
-      # --- Netlify (build locally + deploy) ---
+      # ---- Build client (Netlify) ----
       - name: Setup Node (for client build)
         uses: actions/setup-node@v4
         with:
@@ -60,7 +61,7 @@ jobs:
           cache: npm
           cache-dependency-path: client/package-lock.json
 
-      - name: Build client
+      - name: Install & build client
         working-directory: client
         run: |
           npm ci
@@ -74,7 +75,13 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
-      # --- Render (trigger your backend service deploy hook) ---
-      - name: Trigger Render Deploy Hook
-        if: ${{ secrets.RENDER_DEPLOY_HOOK }}
-        run: curl -X POST "$RENDER_DEPLOY_HOOK"
+      # ---- Render deploy hooks (Option A: simple triggers) ----
+      # Mongo service first (optional; runs only if secret is set)
+      - name: Trigger Render Mongo deploy
+        if: ${{ secrets.RENDER_MONGO_DEPLOY_HOOK }}
+        run: curl -fsSL -X POST "${{ secrets.RENDER_MONGO_DEPLOY_HOOK }}"
+
+      # API service next (Docker)
+      - name: Trigger Render API deploy
+        if: ${{ secrets.RENDER_API_DEPLOY_HOOK }}
+        run: curl -fsSL -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
