@@ -9,9 +9,7 @@ jobs:
   test-frontend:
     name: Frontend tests (client)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: client
+    defaults: { run: { working-directory: client } }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,9 +23,7 @@ jobs:
   test-backend:
     name: Backend tests (api)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
+    defaults: { run: { working-directory: backend } }
     env:
       NODE_ENV: test
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -53,8 +49,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ---- Build client (Netlify) ----
+      # Figure out what changed
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            client:
+              - 'client/**'
+              - '.github/workflows/**'
+            api:
+              - 'backend/**'
+              - '.github/workflows/**'
+            mongo:
+              - 'backend/mongo/**'
+              - 'backend/Dockerfile.mongo'
+              - '.github/workflows/**'
+
+      # ---- Netlify (only if client changed) ----
       - name: Setup Node (for client build)
+        if: ${{ steps.changes.outputs.client == 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -62,26 +75,38 @@ jobs:
           cache-dependency-path: client/package-lock.json
 
       - name: Install & build client
+        if: ${{ steps.changes.outputs.client == 'true' }}
         working-directory: client
         run: |
           npm ci
           npm run build
 
       - name: Deploy to Netlify (Production)
-        if: ${{ secrets.NETLIFY_AUTH_TOKEN && secrets.NETLIFY_SITE_ID }}
+        if: ${{ steps.changes.outputs.client == 'true' && secrets.NETLIFY_AUTH_TOKEN && secrets.NETLIFY_SITE_ID }}
         uses: netlify/actions/cli@v2.0.0
         with:
           args: deploy --dir=client/dist --prod --site ${{ secrets.NETLIFY_SITE_ID }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
-      # ---- Render deploy hooks (Option A: simple triggers) ----
-      # Mongo service first (optional; runs only if secret is set)
+      # ---- Render deploy hooks (Option A) ----
       - name: Trigger Render Mongo deploy
-        if: ${{ secrets.RENDER_MONGO_DEPLOY_HOOK }}
+        if: ${{ steps.changes.outputs.mongo == 'true' && secrets.RENDER_MONGO_DEPLOY_HOOK }}
         run: curl -fsSL -X POST "${{ secrets.RENDER_MONGO_DEPLOY_HOOK }}"
 
-      # API service next (Docker)
       - name: Trigger Render API deploy
-        if: ${{ secrets.RENDER_API_DEPLOY_HOOK }}
+        if: ${{ steps.changes.outputs.api == 'true' && secrets.RENDER_API_DEPLOY_HOOK }}
         run: curl -fsSL -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
+
+      - name: Wait for API health
+        if: ${{ steps.changes.outputs.api == 'true' && secrets.API_HEALTH_URL }}
+        env:
+          URL: ${{ secrets.API_HEALTH_URL }}
+        run: |
+          for i in {1..30}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+            echo "Health HTTP $code"
+            if [ "$code" -ge 200 ] && [ "$code" -lt 400 ]; then exit 0; fi
+            sleep 5
+          done
+          echo "API did not become healthy in time"; exit 1
