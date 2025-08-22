@@ -9,7 +9,9 @@ jobs:
   test-frontend:
     name: Frontend tests (client)
     runs-on: ubuntu-latest
-    defaults: { run: { working-directory: client } }
+    defaults:
+      run:
+        working-directory: client
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,7 +25,9 @@ jobs:
   test-backend:
     name: Backend tests (api)
     runs-on: ubuntu-latest
-    defaults: { run: { working-directory: backend } }
+    defaults:
+      run:
+        working-directory: backend
     env:
       NODE_ENV: test
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -49,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Figure out what changed
+      # Work out what changed
       - uses: dorny/paths-filter@v3
         id: changes
         with:
@@ -82,29 +86,34 @@ jobs:
           npm run build
 
       - name: Deploy to Netlify (Production)
-        if: ${{ steps.changes.outputs.client == 'true' && secrets.NETLIFY_AUTH_TOKEN && secrets.NETLIFY_SITE_ID }}
+        if: ${{ steps.changes.outputs.client == 'true' && env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != '' }}
         uses: netlify/actions/cli@v2.0.0
-        with:
-          args: deploy --dir=client/dist --prod --site ${{ secrets.NETLIFY_SITE_ID }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        with:
+          args: deploy --dir=client/dist --prod --site $NETLIFY_SITE_ID
 
       # ---- Render deploy hooks (Option A) ----
       - name: Trigger Render Mongo deploy
-        if: ${{ steps.changes.outputs.mongo == 'true' && secrets.RENDER_MONGO_DEPLOY_HOOK }}
-        run: curl -fsSL -X POST "${{ secrets.RENDER_MONGO_DEPLOY_HOOK }}"
+        if: ${{ steps.changes.outputs.mongo == 'true' && env.RENDER_MONGO_DEPLOY_HOOK != '' }}
+        env:
+          RENDER_MONGO_DEPLOY_HOOK: ${{ secrets.RENDER_MONGO_DEPLOY_HOOK }}
+        run: curl -fsSL -X POST "$RENDER_MONGO_DEPLOY_HOOK"
 
       - name: Trigger Render API deploy
-        if: ${{ steps.changes.outputs.api == 'true' && secrets.RENDER_API_DEPLOY_HOOK }}
-        run: curl -fsSL -X POST "${{ secrets.RENDER_API_DEPLOY_HOOK }}"
+        if: ${{ steps.changes.outputs.api == 'true' && env.RENDER_API_DEPLOY_HOOK != '' }}
+        env:
+          RENDER_API_DEPLOY_HOOK: ${{ secrets.RENDER_API_DEPLOY_HOOK }}
+        run: curl -fsSL -X POST "$RENDER_API_DEPLOY_HOOK"
 
       - name: Wait for API health
-        if: ${{ steps.changes.outputs.api == 'true' && secrets.API_HEALTH_URL }}
+        if: ${{ steps.changes.outputs.api == 'true' && env.API_HEALTH_URL != '' }}
         env:
-          URL: ${{ secrets.API_HEALTH_URL }}
+          API_HEALTH_URL: ${{ secrets.API_HEALTH_URL }}   # e.g. https://your-api.onrender.com/health
         run: |
           for i in {1..30}; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$API_HEALTH_URL")
             echo "Health HTTP $code"
             if [ "$code" -ge 200 ] && [ "$code" -lt 400 ]; then exit 0; fi
             sleep 5
