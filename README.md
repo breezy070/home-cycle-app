@@ -1,14 +1,228 @@
-[INSTALLATION]
+HomeCycleHome — Deployment Guide
 
-1. installer nodejs v18+
-2. installer mongodb
-3. NPM de node
-4. installer vitejs
+1) Overview & Architecture
 
-5. se placer à la racine du projet et lancer npm install pour intaller les dependences backend
-6. se placer dans le dossier client, et faire npm intall pour installer les depedences frontend
-7. pour lancer le backend : se placer à la racine du projet > npm run dev
-8. pour lancer le front end : se placer dans le dossier client > npm run dev
+Frontend: React + Vite. In dev, /api is proxied to the backend.
+
+Backend: Node/Express (ESM) + MongoDB + JWT (cookies). App & routes are mounted under /api/*.
+
+HTTP client: Axios is configured to call '/api' and send credentials (cookies).
+
+Production routing: Netlify forwards /api/* and /health to the backend.
+
+Containers: The CDA referential values containerization (“Les containeurs implémentent les services requis”). Include Docker in your procedure.
+
+2) Prerequisites
+
+Node.js 18+ (20+ recommended)
+
+Docker Desktop (or Docker Engine + Compose) — for the containerized setup
+
+Netlify account (frontend)
+
+Render (or a Node host) for the backend
+
+3) Environment Variables
+Backend (.env)
+
+Create a .env at the backend root with at least:
+
+PORT=3000
+MONGO_URI=mongodb://<user>:<password>@<host>:27017/<db>?authSource=admin
+JWT_SECRET=<your-strong-secret>
+# Optional (geocoding etiquette):
+NOMINATIM_EMAIL=<your-contact-email>
+NOMINATIM_USER_AGENT=HomeCycleHome/1.0 (<your-contact-email>)
+
+
+The server reads the JWT from the access_token cookie and attaches the user to req.user.
+
+API + CORS + routes are in index.js (mounted under /api).
+
+Frontend (client/.env, optional)
+
+Not strictly required. Axios points to '/api' and passes cookies by default. Netlify redirects to your backend in production.
+
+4) Local Development (non-Docker)
+4.1 Backend
+cd backend
+npm install
+npm run dev   # nodemon on :3000
+
+
+Health route: /health.
+
+4.2 Frontend
+cd client
+npm install
+npm run dev   # Vite on :5173
+
+
+Vite dev proxy sends /api → http://localhost:3000.
+
+5) Run with Docker (Backend + Mongo)
+
+Use this if you want the API and DB fully containerized.
+
+5.1 Prerequisites
+
+Docker Desktop (Windows/Mac) or Docker Engine + Compose (Linux).
+
+5.2 Bootstrap DB User (already scripted)
+
+Mongo is initialized via mongo-init.js (creates DB and a readWrite user). Keep the same credentials in your MONGO_URI.
+
+5.3 Compose Up
+
+From the project root (where docker-compose.yml lives):
+
+docker-compose up --build
+
+
+What this does:
+
+Builds and runs the backend container (exposes :3000).
+
+Runs MongoDB and executes mongo-init.js.
+
+The API connects using MONGO_URI (use the container hostname, e.g. mongo).
+
+Example .env for Docker:
+
+PORT=3000
+MONGO_URI=mongodb://hch_user:hch_pass@mongo:27017/HomeCycleHome?authSource=admin
+JWT_SECRET=<your-strong-secret>
+
+5.4 Verify
+
+API health: curl http://localhost:3000/health → should return OK.
+
+Mongo shell (optional): docker exec -it <mongo-container-id> mongosh -u hch_user -p hch_pass
+
+5.5 Production with Compose
+
+On a VM/Docker host:
+
+docker-compose up -d
+
+
+Expose port 3000 via your reverse proxy (Caddy/Nginx/Traefik). Point your frontend’s /api/* to that API host (see Netlify redirects below).
+
+6) Production Deployments
+6.1 Backend on Render (managed, no Docker required)
+
+Create a Web Service:
+
+Build: npm install
+
+Start: npm start (per backend/package.json)
+
+Environment variables: PORT, MONGO_URI, JWT_SECRET, NOMINATIM_* (optional).
+
+Node runtime: 18+.
+
+Health check: /health (already implemented).
+
+Note the API URL, e.g. https://homecyclehome-api.onrender.com.
+
+You can also deploy as a Docker service on Render if you prefer shipping your own image.
+
+6.2 Frontend on Netlify (static hosting + runtime proxy)
+
+Your netlify.toml already defines:
+
+Build in client/ and publish dist/.
+
+Runtime redirects:
+
+/api/* → your backend on Render
+
+/health → backend health (handy probe)
+
+SPA fallback to /index.html
+
+Steps:
+
+New Site → Link your Git repo.
+
+Build settings:
+
+Base: client
+
+Build command: npm ci && npm run build
+
+Publish directory: dist
+
+Ensure the [[redirects]] target in netlify.toml points to your actual backend URL.
+
+No frontend env var is needed: Axios calls '/api' and Netlify rewrites at the edge.
+
+7) Cookies, CORS & Auth (Prod Notes)
+
+CORS: Backend allows Netlify + localhost origins by default. Update the origin array if your Netlify domain changes.
+
+Cookies/Auth:
+
+Axios uses withCredentials: true; the browser sends/receives access_token cookie.
+
+Frontend checks JWT expiry and auto-logs-out if expired.
+
+Server verifies JWT from cookie (verifyToken) and enforces roles with verifyRole.
+
+8) Health Checks & Smoke Tests
+
+Backend health
+
+Local: curl http://localhost:3000/health
+
+Prod via Netlify edge: curl https://<your-netlify-domain>/health → forwarded to backend.
+
+Auth smoke
+
+Sign in via the app → confirm access_token cookie is set → call a protected route.
+
+9) Troubleshooting
+
+CORS errors (browser console)
+Add your exact Netlify site URL to origin in backend CORS config.
+
+401/403 on protected routes
+Ensure cookies are sent (withCredentials), and JWT_SECRET matches between environments.
+
+Frontend /api 404/502 in production
+Verify netlify.toml redirects target your current backend URL.
+
+Mongo connection timeouts
+Check MONGO_URI, network allowlist, and that the service can reach your DB.
+
+10) Commands Reference
+
+Backend
+
+# from backend/
+npm run dev     # dev server on :3000
+npm start       # production start
+
+
+Frontend
+
+# from client/
+npm run dev     # vite on :5173 (proxies /api to :3000)
+npm run build   # build to /dist
+npm run preview # serve built site locally
+
+
+Docker
+
+docker-compose up --build  # build & run API + Mongo
+docker-compose up -d       # daemon mode (prod-like)
+docker-compose down        # stop
+
+Appendix — How the /api path stays the same
+
+Dev: Vite proxies /api → http://localhost:3000.
+
+Prod: Netlify rewrites /api/* → your backend URL. Your frontend code doesn’t change.
 
 
 
