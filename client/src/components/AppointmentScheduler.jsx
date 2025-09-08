@@ -9,19 +9,19 @@ const ScheduleAppointment = () => {
   const [technicians, setTechnicians] = useState([]);
   const {currentUser} = useSelector((state) => state.user);
 
-    // Fetch all technicians
-    useEffect(() => {
-        const fetchTechnicians = async () => {
-          try {
-            const response = await api.get('/admin/technicians');
-            setTechnicians(response.data.technicians);
-          } catch (error) {
-            console.error('Error fetching technicians:', error);
-          }
-        };
-    
-        fetchTechnicians();
-      }, []);
+  // Fetch all technicians
+  useEffect(() => {
+      const fetchTechnicians = async () => {
+        try {
+          const response = await api.get('/admin/technicians');
+          setTechnicians(response.data.technicians);
+        } catch (error) {
+          console.error('Error fetching technicians:', error);
+        }
+      };
+  
+      fetchTechnicians();
+    }, []);
 
   const handleTimeSlotSelect = (date, time) => {
     setSelectedSlot({ date, time });

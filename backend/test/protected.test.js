@@ -23,7 +23,7 @@ function sign(payload) {
 
 describe('Protected routes', () => {
   test('requires auth', async () => {
-    // hit the same admin endpoint you saw in logs
+    // admin endpoint
     const res = await request(app).get('/api/admin/get-interventions')
     expect([401, 403]).toContain(res.status)
   })
@@ -34,9 +34,9 @@ describe('Protected routes', () => {
       .get('/api/admin/get-interventions')
       .set('Cookie', [`access_token=${adminToken}; HttpOnly`])
 
-    // could be 200 (with body) or 204 (no content) depending on your controller
+    
     expect([200, 204]).toContain(res.status)
-    // If 200, body is typically an array/object; skip if 204
+  
     if (res.status === 200) {
       expect(typeof res.body === 'object').toBe(true)
     }
