@@ -99,7 +99,7 @@ jobs:
 
 
 
-      # ---- Render deploy hooks (Option A) ----
+      # ---- Render deploy hooks ----
       - name: Trigger Render Mongo deploy
         if: ${{ steps.changes.outputs.mongo == 'true' && env.RENDER_MONGO_DEPLOY_HOOK != '' }}
         env:
@@ -115,7 +115,7 @@ jobs:
       - name: Wait for API health
         if: ${{ steps.changes.outputs.api == 'true' && env.API_HEALTH_URL != '' }}
         env:
-          API_HEALTH_URL: ${{ secrets.API_HEALTH_URL }}   # e.g. https://your-api.onrender.com/health
+          API_HEALTH_URL: ${{ secrets.API_HEALTH_URL }} 
         run: |
           for i in {1..30}; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "$API_HEALTH_URL")

@@ -1,13 +1,11 @@
-// models/userModel.js
 import mongoose from "mongoose";
 
 const AddressSchema = new mongoose.Schema({
   type: { type: String, enum: ["Point"], default: "Point" },
-  coordinates: { type: [Number], default: undefined }, // ← not required
+  coordinates: { type: [Number], default: undefined },
   addressString: { type: String, required: [true, "Address is required !"] },
 }, { _id: false });
 
-// Index the coordinates array; docs without coordinates are fine
 AddressSchema.index({ coordinates: "2dsphere" });
 
 const userSchema = new mongoose.Schema({
@@ -23,7 +21,6 @@ const userSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-// If you kept userSchema.index({ address: '2dsphere' }); remove it or change to coordinates:
 userSchema.index({ "address.coordinates": '2dsphere' });
 
 export default mongoose.model("User", userSchema);
