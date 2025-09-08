@@ -6,18 +6,18 @@ const interventionSchema = mongoose.Schema(
         technicianId: { type: mongoose.Schema.Types.ObjectId, ref: 'Technician', required: false },
         date: { type: Date, required: false },
         status: { type: String, enum: ['Pending', 'Completed', 'Cancelled','In progress', 'Accepted'], default: 'Pending' },
-        services: [String], // List of services like 'brake replacement', 'tyre change'
+        services: [String],
         comments: [
             {
               user: {
                 type: mongoose.Schema.Types.ObjectId,
                 required: true,
-                refPath: 'comments.userModel', // Dynamic reference
+                refPath: 'comments.userModel',
               },
               userModel: {
                 type: String,
                 required: true,
-                enum: ['User', 'Technician'], // Possible models this field can reference
+                enum: ['User', 'Technician'],
               },
               text: { type: String, required: true },
               createdAt: { type: Date, default: Date.now },
@@ -29,7 +29,7 @@ const interventionSchema = mongoose.Schema(
     }
 
 );
-//this creates the collection on the mongoDB, the name of the database was created on the .env file by specifying it.
+
 const Intervention = mongoose.model("Intervention", interventionSchema);
 
 export default Intervention;

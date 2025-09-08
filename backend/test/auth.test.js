@@ -4,7 +4,6 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 import app from '../index.js'
 
-// ⬇️ Make sure these paths match your project
 import User from '../models/userModel.js'
 import Technician from '../models/technicianModel.js'
 import Admin from '../models/adminModel.js'
@@ -41,13 +40,11 @@ async function seedUserDoc({ email, password, role = 'user', withAddress = true 
 }
 
 async function seedTechnicianDoc({ email, password }) {
-  // minimal fields your signupTechnician uses: first_name, last_name, email, password
   return Technician.create({
     first_name: 'Tech',
     last_name: 'Nician',
     email,
     password: await bcrypt.hash(password, 10),
-    // if your Technician schema has role, set it explicitly:
     role: 'technician',
   })
 }

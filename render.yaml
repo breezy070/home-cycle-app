@@ -1,5 +1,4 @@
 # render.yaml
-
 services:
   # 1) Private Mongo (Docker image + persistent disk)
   - type: pserv                # <— private service

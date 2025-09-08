@@ -63,23 +63,6 @@ export default function App() {
 
 
   return (
-    // <BrowserRouter>
-    //   <Header />
-    //     <Routes>
-    //       <Route path="/" element={<HomePage />} />
-    //       <Route path="/about" element={<About />} />
-    //       <Route path="/sign-in" element={<SignIn />} />
-    //       <Route path="/sign-up" element={<SignUp />} />
-    //       <Route element={<PrivateRoute />}>
-    //         <Route path="/profile" element={<Profile />} />
-    //         <Route path="/interventions" element={<Interventions />} />
-    //         <Route path="/factures" element={<Factures />} />
-    //         <Route path="/technician-zone-assignment" element={<TechnicianZoneAssignment />} />
-    //         <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
-    //       </Route>
-          
-    //     </Routes>
-    // </BrowserRouter>
     <BrowserRouter>
     <Header />
     <Routes>
@@ -90,12 +73,7 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/unauthorized" element={<PageNotFound />} />
 
-        {/* Protected Routes */}
-        {/* <Route element={<PrivateRoute allowedRoles={['user', 'admin', 'technician']} />}>
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/interventions" element={<Interventions />} />
-            <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
-        </Route> */}
+        {/* Logged User with Role Routes */}
         <Route element={<PrivateRoute allowedRoles={['user', 'admin', 'technician']}/>}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/interventions" element={<Interventions />} />
@@ -103,6 +81,7 @@ export default function App() {
             <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
         </Route>
 
+        {/* Admin Only Routes */}
         <Route element={<PrivateRoute allowedRoles={['admin']} />}>
           <Route path="/technician-zone-assignment" element={<TechnicianZoneAssignment />} />
           <Route path="/gestion-interventions" element={<GestionInterventions />} />

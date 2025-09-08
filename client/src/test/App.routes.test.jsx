@@ -1,4 +1,3 @@
-// client/src/test/App.routes.test.jsx
 import { describe, test, expect } from 'vitest'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
@@ -10,7 +9,7 @@ function userReducer(state = { currentUser: null }, action) { return state }
 
 function renderAt(route = '/') {
   const store = configureStore({ reducer: { user: userReducer } })
-  // push the test URL BEFORE rendering, because App contains <BrowserRouter />
+  // pushing the test URL BEFORE rendering, because App contains <BrowserRouter />
   window.history.pushState({}, '', route)
   return render(
     <Provider store={store}>
@@ -20,12 +19,12 @@ function renderAt(route = '/') {
 }
 
 describe('App routing', () => {
-  it('should renders home on / (no redirect)', async () => {
+  it('should render home on / (no redirect)', async () => {
     renderAt('/')
     expect(window.location.pathname).toBe('/')
   })
 
-  it('should unauthenticated user hitting /profile is redirected', async () => {
+  it('should redirect unauthenticated user hitting /profile', async () => {
     renderAt('/profile')
     await waitFor(() => {
       expect(['/sign-in', '/unauthorized']).toContain(window.location.pathname)
