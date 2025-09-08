@@ -217,7 +217,7 @@ export const addUsers = async (req, res) => {
     // 4) Hash password
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    // 5) Geocode (Nominatim-compliant + robust)
+    // 5) Geocode (Nominatim-compliant)
     async function geocodeAddress(addressString) {
       try {
         const url = "https://nominatim.openstreetmap.org/search";
@@ -295,7 +295,7 @@ export const deleteIntervention = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Intervention not found' });
     }
 
-    const technicianId = intervention.technicianId; // Assuming `technician` field stores the Technician ID
+    const technicianId = intervention.technicianId; // grabbing technicianid from the intervention
 
     await Intervention.findByIdAndDelete(req.params.id);
 
