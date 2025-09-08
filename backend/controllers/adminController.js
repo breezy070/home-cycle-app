@@ -398,6 +398,8 @@ export const assignTechnicianZone = async (req, res, next ) => {
     }
 };
 
+//testing deploy
+
 //update admin
 export const updateAdmin = async (req, res, next) => {
     // if (req.admin.id !== req.params.id) {
